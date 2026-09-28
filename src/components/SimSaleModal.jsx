@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import api from '../api/axios';
 import { useLanguage } from '../context/LanguageContext';
 import {
-  X, ChevronLeft, Smartphone, Tag, CheckCircle2, Award, Search, User, RefreshCw, UserPlus, Phone, MapPin, Briefcase, ShieldAlert
+  X, ChevronLeft, Smartphone, Tag, CheckCircle2, Percent, Award, Search, User, RefreshCw, UserPlus, Phone, MapPin, Briefcase
 } from 'lucide-react';
 
 const formatDZD = (n) => new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 2 }).format(n || 0);
@@ -18,11 +18,8 @@ export default function SimSaleModal({ sessionId, catalog, onClose, onComplete }
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedOffer, setSelectedOffer] = useState(null);
 
-  // NEW: Discount Approval State
-  const [discountRequestId, setDiscountRequestId] = useState(null);
-  const [discountRequestStatus, setDiscountRequestStatus] = useState('idle'); // idle, pending, approved, rejected
+  const [showDiscount, setShowDiscount] = useState(false);
   const [discountAmount, setDiscountAmount] = useState('');
-  
   const [submitting, setSubmitting] = useState(false);
   const [settings, setSettings] = useState(null);
   const [pointsToRedeem, setPointsToRedeem] = useState(0);
@@ -36,26 +33,6 @@ export default function SimSaleModal({ sessionId, catalog, onClose, onComplete }
   useEffect(() => {
     api.get('/settings/loyalty').then(res => setSettings(res.data.data)).catch(console.error);
   }, []);
-
-  // NEW: Polling loop to check discount status
-  useEffect(() => {
-    let interval;
-    if (discountRequestStatus === 'pending' && discountRequestId) {
-      interval = setInterval(async () => {
-        try {
-          const res = await api.get(`/discounts/${discountRequestId}/status`);
-          if (res.data.data.status !== 'pending') {
-            setDiscountRequestStatus(res.data.data.status); // Will change to 'approved' or 'rejected'
-          }
-        } catch (err) {
-          // If request expired or failed, reset
-          setDiscountRequestStatus('idle');
-          setDiscountRequestId(null);
-        }
-      }, 3000); // Check every 3 seconds
-    }
-    return () => clearInterval(interval);
-  }, [discountRequestStatus, discountRequestId]);
 
   useEffect(() => {
     const searchCustomer = async () => {
@@ -81,20 +58,6 @@ export default function SimSaleModal({ sessionId, catalog, onClose, onComplete }
     if (!selectedCategory) return [];
     return offers.filter((o) => o.category_id === selectedCategory.id).sort((a, b) => Number(a.selling_price) - Number(b.selling_price));
   }, [offers, selectedCategory]);
-
-  const requestAdminDiscount = async () => {
-    try {
-      setDiscountRequestStatus('pending');
-      const res = await api.post('/discounts/request', {
-        product_name: selectedOffer.name,
-        price: selectedOffer.selling_price
-      });
-      setDiscountRequestId(res.data.data.id);
-    } catch (err) {
-      setError("Failed to request discount permission.");
-      setDiscountRequestStatus('idle');
-    }
-  };
 
   const handleConfirmSale = async (e) => {
     if (e) e.preventDefault();
@@ -122,8 +85,7 @@ export default function SimSaleModal({ sessionId, catalog, onClose, onComplete }
 
       const res = await api.post('/sales/sim', {
         session_id: sessionId, offer_id: selectedOffer.id, customer_id: finalCustomerId,
-        discount_amount: discountRequestStatus === 'approved' ? (parseFloat(discountAmount) || 0) : 0, 
-        points_redeemed: parseFloat(pointsToRedeem || 0)
+        discount_amount: showDiscount ? (parseFloat(discountAmount) || 0) : 0, points_redeemed: parseFloat(pointsToRedeem || 0)
       });
       onComplete?.(res.data.data);
     } catch (err) {
@@ -145,8 +107,7 @@ export default function SimSaleModal({ sessionId, catalog, onClose, onComplete }
   const customerPoints = parseFloat(selectedCustomer?.available_points || 0);
   const minPointsRequired = settings?.min_points_to_redeem || 600;
   
-  // Enforce discount only if approved
-  const manualDiscount = discountRequestStatus === 'approved' ? parsedDiscount : 0;
+  const manualDiscount = showDiscount ? parsedDiscount : 0;
   const priceAfterManualDiscount = Math.max(0, originalPrice - manualDiscount);
   const maxPointsForThisSale = Math.min(customerPoints, priceAfterManualDiscount / pointValueDZD);
   const finalPrice = Math.max(0, priceAfterManualDiscount - (parseFloat(pointsToRedeem || 0) * pointValueDZD));
@@ -184,13 +145,7 @@ export default function SimSaleModal({ sessionId, catalog, onClose, onComplete }
               <p className="text-xs text-gray-500 mb-4">{t('modal.pick_offer')}</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {offersInCategory.map((o) => (
-                  <button key={o.id} onClick={() => { 
-                    setSelectedOffer(o); 
-                    setStep('checkout'); 
-                    setDiscountRequestStatus('idle'); 
-                    setDiscountRequestId(null); 
-                    setDiscountAmount(''); 
-                  }} className="p-4 rounded-xl border-2 border-gray-200 hover:border-red-400 hover:bg-red-50 transition-colors text-start">
+                  <button key={o.id} onClick={() => { setSelectedOffer(o); setStep('checkout'); setShowDiscount(false); setDiscountAmount(''); }} className="p-4 rounded-xl border-2 border-gray-200 hover:border-red-400 hover:bg-red-50 transition-colors text-start">
                     <div className="text-2xl font-extrabold text-gray-900">{formatDZD(o.selling_price)}</div>
                     <div className="text-sm text-gray-700 mt-1 truncate">{o.name}</div>
                   </button>
@@ -206,41 +161,17 @@ export default function SimSaleModal({ sessionId, catalog, onClose, onComplete }
                     <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">{t('modal.selected_offer')}</div>
                     <div className="font-bold text-gray-900 text-lg">{selectedOffer.name}</div>
                   </div>
-                  <div className={`text-2xl font-black ${discountRequestStatus === 'approved' && parsedDiscount > 0 ? 'text-gray-400 line-through text-lg' : 'text-gray-900'}`}>{formatDZD(selectedOffer.selling_price)}</div>
+                  <div className={`text-2xl font-black ${showDiscount && parsedDiscount > 0 ? 'text-gray-400 line-through text-lg' : 'text-gray-900'}`}>{formatDZD(selectedOffer.selling_price)}</div>
                 </div>
                 
-                {/* NEW: Admin Permission Discount Block */}
                 <div className="mt-3 pt-3 border-t border-gray-200">
-                  {discountRequestStatus === 'idle' && (
-                    <button type="button" onClick={requestAdminDiscount} className="flex items-center gap-2 text-sm text-red-600 hover:text-red-800 font-bold transition-colors w-max bg-red-50 px-3 py-2 rounded-lg border border-red-200">
-                      <ShieldAlert size={16} /> {t('modal.request_discount_permission') || 'Request Admin Discount Permission'}
-                    </button>
-                  )}
-                  
-                  {discountRequestStatus === 'pending' && (
-                    <div className="flex items-center gap-2 text-sm text-amber-600 font-bold animate-pulse bg-amber-50 px-3 py-2 rounded-lg border border-amber-200 w-max">
-                      <RefreshCw size={16} className="animate-spin" /> {t('modal.waiting_for_admin') || 'Waiting for Admin approval...'}
-                    </div>
-                  )}
-
-                  {discountRequestStatus === 'rejected' && (
-                    <div className="flex items-center gap-2 text-sm text-red-600 font-bold bg-red-50 px-3 py-2 rounded-lg border border-red-200 w-max">
-                      <X size={16} strokeWidth={3} /> {t('modal.discount_denied') || 'Permission Denied by Admin'}
-                    </div>
-                  )}
-
-                  {discountRequestStatus === 'approved' && (
-                    <div className="space-y-3 animate-in fade-in zoom-in duration-300">
-                      <div className="flex items-center gap-2 text-sm text-green-700 font-bold bg-green-50 px-3 py-2 rounded-lg border border-green-200 w-max">
-                        <CheckCircle2 size={16} strokeWidth={3} /> {t('modal.discount_approved') || 'Discount Approved!'}
-                      </div>
-                      <input 
-                         type="number" min="0" step="1" 
-                         placeholder={t('modal.discount_placeholder')} 
-                         value={discountAmount} 
-                         onChange={(e) => setDiscountAmount(e.target.value)} 
-                         className="block w-full rounded-md border-2 border-green-300 px-4 py-3 font-bold text-lg text-green-900 focus:border-green-600 outline-none bg-green-50" 
-                      />
+                  <label className="flex items-center gap-2 text-sm text-red-600 cursor-pointer font-bold w-max">
+                    <input type="checkbox" checked={showDiscount} onChange={(e) => { setShowDiscount(e.target.checked); if (!e.target.checked) setDiscountAmount(''); }} className="rounded border-gray-300 text-red-600 focus:ring-red-500" />
+                    <Percent size={14} /> {t('modal.apply_discount')}
+                  </label>
+                  {showDiscount && (
+                    <div className="flex items-center gap-3 mt-3">
+                      <input type="number" min="0" step="1" placeholder={t('modal.discount_placeholder')} value={discountAmount} onChange={(e) => setDiscountAmount(e.target.value)} className="block w-full rounded-md border border-gray-300 px-3 py-2 font-bold focus:border-red-500 outline-none" />
                     </div>
                   )}
                 </div>
