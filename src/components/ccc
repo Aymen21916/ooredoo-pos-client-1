@@ -1,0 +1,65 @@
+Step 3: Main Cashier Dashboard
+Upload the primary screens the cashier interacts with all day. We will translate the main buttons, ledger headers, and status badges.
+
+POSDashboard.jsx
+
+TransactionLedger.jsx
+
+Step 4: The Core Sales Modals
+Upload the primary transaction windows. We will translate the inputs, search bars, customer registration fields, and loyalty point prompts.
+
+SimSaleModal.jsx
+
+StormSaleModal.jsx
+
+AccessorySaleModal.jsx
+
+Step 5: Utility & Financial Modals
+Upload the secondary tools used by the cashier to manage cash and receipts.
+
+DebtModal.jsx
+
+RegisterExpenseModal.jsx
+
+CashierAdvancePanel.jsx
+
+ReceiptModal.jsx
+
+UssdTerminalModal.jsx
+
+Step 6: Cashier CRM & Reports
+Upload the pages where the cashier views their performance and client list.
+
+Customers.jsx
+
+CashierDateRangeReport.jsx
+
+Step 7: Admin Dashboard (Batch 1)
+Upload the primary financial and analytical pages for the administrator.
+
+AdminDashboard.jsx
+
+CashManagement.jsx
+
+MonthlyTrends.jsx
+
+DailyReports.jsx
+
+DateRangeReports.jsx
+
+Step 8: Admin Management (Batch 2)
+Upload the database management tables used by the administrator.
+
+LoyaltySettings.jsx
+
+ManageOffers.jsx
+
+ManageProducts.jsx
+
+ManageSimStock.jsx
+
+ManageUsers.jsx
+
+ManageCustomers.jsx
+
+Upload the files for Step 1 whenever you are ready.
