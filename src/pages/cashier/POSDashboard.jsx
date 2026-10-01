@@ -378,7 +378,12 @@ function PopRemindersModal({ popData, selectedCycleTab, setSelectedCycleTab, onC
               <tbody className="divide-y divide-gray-50">
                 {popData.customers.map((c, i) => (
                   <tr key={i} className="hover:bg-amber-50/50 transition-colors">
-                    <td className="py-3 font-bold text-gray-900">{c.first_name} {c.last_name}</td>
+                    <td className="py-3 font-bold text-gray-900">
+  {c.first_name} {c.last_name}
+  {c.source === 'storm' && (
+    <span className="ms-2 rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-black uppercase text-orange-700">Storm</span>
+  )}
+</td>
                     <td className="py-3 font-mono text-gray-600">{c.phone_number}</td>
                     <td className="py-3 text-gray-500 text-xs font-medium">{new Date(c.sold_at).toLocaleDateString('en-GB')}</td>
                   </tr>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { 
-  X, CheckCircle2, RefreshCw, User, Phone, MapPin, Briefcase, Zap, Search, Award, UserPlus, Percent 
+  X, CheckCircle2, RefreshCw, User, Phone, MapPin, Briefcase, Zap, Search, Award, UserPlus, Percent, Bell 
 } from 'lucide-react';
 import api from '../api/axios';
 
@@ -23,6 +23,8 @@ export default function StormSaleModal({ sessionId, onClose, onComplete }) {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   
   const [newCustomerData, setNewCustomerData] = useState({ first_name: '', last_name: '', address: '', profession: '', referred_by_phone: '' });
+  const [isPopNumber, setIsPopNumber] = useState(false);
+  const [popCycle, setPopCycle] = useState(null);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -34,12 +36,13 @@ export default function StormSaleModal({ sessionId, onClose, onComplete }) {
   useEffect(() => {
     const searchCustomer = async () => {
       if (phoneNumber.length < 9) {
-        setSelectedCustomer(null); setPointsToRedeem(0); return;
+        setSelectedCustomer(null); setPointsToRedeem(0); setIsPopNumber(false); setPopCycle(null); return;
       }
       setIsSearching(true);
       try {
         const { data } = await api.get(`/customers/lookup?phone=${phoneNumber}`);
         setSelectedCustomer(data.data || null);
+        if (data.data?.is_pop) { setIsPopNumber(true); setPopCycle(data.data.pop_cycle || null); }
         setPointsToRedeem(0);
       } catch (err) {
         setSelectedCustomer(null);
@@ -54,6 +57,12 @@ export default function StormSaleModal({ sessionId, onClose, onComplete }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); setError('');
+
+if (isPopNumber && phoneNumber.length >= 9 && !popCycle) {
+  setError('Please choose a POP cycle.');
+  setLoading(false);
+  return;
+}
     
     try {
       let finalCustomerId = selectedCustomer?.id || null;
@@ -86,6 +95,8 @@ export default function StormSaleModal({ sessionId, onClose, onComplete }) {
         customer_id: finalCustomerId,
         note: note.trim() || '',
         points_redeemed: parseFloat(pointsToRedeem || 0),
+        is_pop_number: phoneNumber.length >= 9 && isPopNumber,
+pop_cycle: phoneNumber.length >= 9 && isPopNumber ? popCycle : null,
         discount_amount: showDiscount ? (parseFloat(discountAmount) || 0) : 0
       });
 
@@ -231,6 +242,49 @@ export default function StormSaleModal({ sessionId, onClose, onComplete }) {
                 </div>
               )}
             </div>
+
+            {phoneNumber.length >= 9 && (
+  <div className="p-4 border-2 border-amber-200 bg-amber-50 rounded-xl space-y-3">
+    <label className="flex items-start gap-3 cursor-pointer select-none">
+      <input
+        type="checkbox"
+        checked={isPopNumber}
+        onChange={(e) => { setIsPopNumber(e.target.checked); if (!e.target.checked) setPopCycle(null); }}
+        className="mt-0.5 h-5 w-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+      />
+      <span>
+        <span className="flex items-center gap-1.5 font-bold text-amber-900"><Bell size={16} /> Ooredoo POP number</span>
+        <span className="block text-xs font-medium text-amber-800/80 mt-0.5">Adds this customer to the POP customers and to the POP renewal alerts.</span>
+      </span>
+    </label>
+
+    {isPopNumber && (
+      <div>
+        <div className="text-[11px] font-black uppercase tracking-wider text-amber-800 mb-2">Choose the cycle that suits the client</div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {[1, 8, 15, 22].map((cycle) => (
+            <label
+              key={cycle}
+              className={`flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 cursor-pointer select-none font-bold text-sm transition-colors ${
+                popCycle === cycle
+                  ? 'border-amber-500 bg-white text-amber-700'
+                  : 'border-amber-200 bg-amber-50 text-amber-800 hover:bg-white'
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={popCycle === cycle}
+                onChange={(e) => setPopCycle(e.target.checked ? cycle : null)}
+                className="h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+              />
+              Cycle {cycle}
+            </label>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+)}
 
             <div className="mt-6 flex flex-col items-end pt-5 border-t border-gray-200">
               <div className="text-sm font-bold text-gray-500 mb-1 uppercase tracking-wider">{t('modal.final_total')}</div>

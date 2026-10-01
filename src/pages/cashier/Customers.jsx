@@ -3,8 +3,10 @@ import api from '../../api/axios';
 import { useLanguage } from '../../context/LanguageContext';
 import {
   UsersRound, Search, RefreshCw, Phone, MapPin, Briefcase, User, 
-  Smartphone, Zap, CreditCard, History, Award, Shield, Star, Crown, Printer
+  Smartphone, Zap, CreditCard, History, Award, Shield, Star, Crown, Printer, Bell
 } from 'lucide-react';
+import CustomerBrowser from '../../components/CustomerBrowser';
+
 
 const formatDZD = (n) => new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 2 }).format(n || 0);
 const formatDateTime = (s) => {
@@ -113,6 +115,10 @@ export default function CashierCustomers() {
           {error && <div className="mt-3 text-sm font-bold text-red-600">{error}</div>}
         </div>
 
+        {!customer && (
+  <CustomerBrowser onSelect={(phone) => { setSearchPhone(phone); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
+)}
+
         {customer && (
           <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
             <div className="p-6 sm:p-8 bg-gray-50 border-b border-gray-200 flex flex-col sm:flex-row sm:items-start justify-between gap-6">
@@ -120,6 +126,11 @@ export default function CashierCustomers() {
                 <div className="flex items-center gap-3 mb-2">
                   <h2 className="text-3xl font-black text-gray-900 tracking-tight">{customer.first_name} {customer.last_name}</h2>
                   <TierBadge tier={customer.stats?.tier} />
+                  {customer.is_pop && (
+  <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-wider text-amber-700">
+    <Bell size={12} /> POP{customer.pop_cycle ? ` · Cycle ${customer.pop_cycle}` : ''} POP
+  </span>
+)}
                 </div>
                 <div className="text-base font-medium text-gray-500 mb-4 font-mono text-start">{customer.phone_number}</div>
                 <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 font-medium">

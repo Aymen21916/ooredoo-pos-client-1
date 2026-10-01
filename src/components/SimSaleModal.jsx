@@ -29,6 +29,7 @@ export default function SimSaleModal({ sessionId, catalog, onClose, onComplete }
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   
   const [newCustomerData, setNewCustomerData] = useState({ first_name: '', last_name: '', address: '', profession: '', referred_by_phone: '' });
+  const [appInstalled, setAppInstalled] = useState(false);
 
   useEffect(() => {
     api.get('/settings/loyalty').then(res => setSettings(res.data.data)).catch(console.error);
@@ -85,7 +86,7 @@ export default function SimSaleModal({ sessionId, catalog, onClose, onComplete }
 
       const res = await api.post('/sales/sim', {
         session_id: sessionId, offer_id: selectedOffer.id, customer_id: finalCustomerId,
-        discount_amount: showDiscount ? (parseFloat(discountAmount) || 0) : 0, points_redeemed: parseFloat(pointsToRedeem || 0)
+        discount_amount: showDiscount ? (parseFloat(discountAmount) || 0) : 0, points_redeemed: parseFloat(pointsToRedeem || 0), my_ooredoo_app_installed: appInstalled,
       });
       onComplete?.(res.data.data);
     } catch (err) {
@@ -96,7 +97,7 @@ export default function SimSaleModal({ sessionId, catalog, onClose, onComplete }
   const goBack = () => {
     setError('');
     if (step === 'offer') setStep('category');
-    else if (step === 'checkout') { setStep('offer'); setPhoneNumber(''); setSelectedCustomer(null); setPointsToRedeem(0); }
+    else if (step === 'checkout') { setStep('offer'); setAppInstalled(false); setPhoneNumber(''); setSelectedCustomer(null); setPointsToRedeem(0); }
   };
 
   const stepNumber = STEPS.indexOf(step) + 1;
@@ -254,6 +255,15 @@ export default function SimSaleModal({ sessionId, catalog, onClose, onComplete }
                   </div>
                 )}
               </div>
+
+              <label className="flex items-start gap-3 p-4 border-2 border-red-200 bg-red-50 rounded-xl cursor-pointer select-none">
+  <input type="checkbox" checked={appInstalled} onChange={(e) => setAppInstalled(e.target.checked)}
+    className="mt-0.5 h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500" />
+  <span>
+    <span className="flex items-center gap-1.5 font-bold text-red-900"><Smartphone size={16} /> My Ooredoo App Installed</span>
+    <span className="block text-xs font-medium text-red-800/80 mt-0.5">Tick if you installed the My Ooredoo app for the customer with this SIM.</span>
+  </span>
+</label>
 
               <div className="mt-6 flex flex-col items-end pt-5 border-t border-gray-200">
                 <div className="text-sm font-bold text-gray-500 mb-1 uppercase tracking-wider">{t('modal.final_total')}</div>
