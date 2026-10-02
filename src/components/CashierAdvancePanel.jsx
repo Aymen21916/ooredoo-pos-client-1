@@ -34,6 +34,7 @@ export default function CashierAdvancePanel({ sessionId = null, refreshKey = 0, 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [internalRefresh, setInternalRefresh] = useState(0);
+  const [payroll, setPayroll] = useState(null);
 
   const [showModal, setShowModal] = useState(false);
   const [formAmount, setFormAmount] = useState('');
@@ -69,6 +70,14 @@ export default function CashierAdvancePanel({ sessionId = null, refreshKey = 0, 
     load();
     return () => { cancelled = true; };
   }, [page, refreshKey, internalRefresh]);
+
+  useEffect(() => {
+    let cancelled = false;
+    api.get('/advances/salary/me')
+      .then((res) => { if (!cancelled) setPayroll(res.data?.data || null); })
+      .catch(() => { if (!cancelled) setPayroll(null); });
+    return () => { cancelled = true; };
+  }, [refreshKey, internalRefresh]);
 
   const refreshPanel = () => setInternalRefresh((n) => n + 1);
 
@@ -157,6 +166,21 @@ export default function CashierAdvancePanel({ sessionId = null, refreshKey = 0, 
           <RefreshCw size={16} />
         </button>
       </div>
+
+      {payroll && (
+        <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-br from-emerald-50 to-white">
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">My salary · {payroll.month}</p>
+          <p className="text-3xl font-extrabold text-gray-900">{formatDZD(payroll.total_salary)}</p>
+          <div className="mt-3 space-y-1 text-sm text-gray-600">
+            <div className="flex justify-between"><span>Base salary</span><span className="font-medium text-gray-900">{formatDZD(payroll.base_salary)}</span></div>
+            <div className="flex justify-between"><span>SIM commission ({payroll.sim_units})</span><span className="font-medium text-gray-900">{formatDZD(payroll.sim_commission)}</span></div>
+            <div className="flex justify-between"><span>Accessory commission ({payroll.accessory_units})</span><span className="font-medium text-gray-900">{formatDZD(payroll.accessory_commission)}</span></div>
+            {payroll.app_commission_enabled && (
+              <div className="flex justify-between"><span>My Ooredoo app ({payroll.app_installs})</span><span className="font-medium text-gray-900">{formatDZD(payroll.app_commission)}</span></div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="px-4 py-5 border-b border-gray-100 bg-gradient-to-br from-purple-50 to-white">
         <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import api from '../../api/axios';
+import PayrollSection from './PayrollSection';
 import {
   Wallet, RefreshCw, X, AlertCircle, CheckCircle2, Search, Store,
   User, ArrowDownCircle, ArrowUpCircle, Banknote, History,
@@ -46,6 +47,7 @@ export default function AdminAdvances() {
   const [selectedId, setSelectedId] = useState(null);
   const [details, setDetails]       = useState(null); // { cashier, outstanding_balance, items, ... }
   const [detailsLoading, setDetailsLoading] = useState(false);
+  const [tab, setTab] = useState('advances');
 
   // Repayment modal state — shared between the table row action and the
   // drill-down panel "Record repayment" button.
@@ -201,6 +203,22 @@ export default function AdminAdvances() {
         </div>
       )}
 
+      <div className="flex gap-2 border-b border-gray-200">
+        {[['advances', 'Advances'], ['salaries', 'Salaries & Settings']].map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setTab(key)}
+            className={`px-4 py-2 text-sm font-bold border-b-2 -mb-px transition-colors ${
+              tab === key ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-800'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'advances' && (<>
+
       {/* KPI strip */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <KpiCard
@@ -309,6 +327,10 @@ export default function AdminAdvances() {
           </tbody>
         </table>
       </div>
+
+      </>)}
+
+      {tab === 'salaries' && <PayrollSection />}
 
       {/* Drill-down modal */}
       {selectedId !== null && (
