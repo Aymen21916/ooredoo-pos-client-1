@@ -48,7 +48,7 @@ export default function DebtModal({ sessionId, onClose, onComplete }) {
   const validateAmountAndDescription = () => {
     const errs = {};
     const trimmedAmount = String(amount).trim();
-    if (!trimmedAmount) errs.amount = 'Amount is required.';
+    if (!trimmedAmount) errs.amount = 'validation.amount_required';
     else if (!AMOUNT_PATTERN.test(trimmedAmount)) errs.amount = 'Amount must be a number with at most two decimal places.';
     else {
       const num = Number(trimmedAmount);

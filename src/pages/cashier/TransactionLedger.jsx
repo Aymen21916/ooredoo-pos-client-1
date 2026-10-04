@@ -52,7 +52,7 @@ export default function TransactionLedger({ sessionId, refreshTrigger, onVoidSuc
       closeVoidModal();
     } catch (err) {
       closeVoidModal();
-      showError(err.response?.data?.message || 'Failed to void transaction');
+      showError(err.response?.data?.message || 'transaction.failed_to_void');
     }
   };
 

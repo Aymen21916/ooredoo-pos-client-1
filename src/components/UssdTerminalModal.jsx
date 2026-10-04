@@ -121,13 +121,13 @@ export default function UssdTerminalModal({ serviceCode, posSessionId, onClose, 
   const handleRecordInPOS = async () => {
     if (!parsedTransaction || !posSessionId) return;
     const finalAmount = parsedTransaction.amount !== null ? parsedTransaction.amount : parseFloat(manualAmount);
-    if (!finalAmount || isNaN(finalAmount) || finalAmount <= 0) { setError("Please enter a valid amount."); return; }
+    if (!finalAmount || isNaN(finalAmount) || finalAmount <= 0) { setError("validation.invalid_amount"); return; }
 
     setIsRecordingPOS(true); setError("");
     try {
       let customerId = linkedCustomer?.id || null;
       
-      // OPTIONAL REGISTRATION LOGIC: Only create customer if they explicitly typed a First or Last name.
+      // OPTIONAL REGISTRATION LOGIC: Only create customer if they explicitly typed a First or ussd.last_name.
       const hasName = clientFirstName.trim().length > 0 || clientLastName.trim().length > 0;
       
       if (!customerId && clientPhone && hasName) {

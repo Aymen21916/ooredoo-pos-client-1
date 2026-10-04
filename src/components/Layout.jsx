@@ -70,13 +70,13 @@ export default function Layout() {
     <div className="flex flex-col h-screen bg-gray-100">
       <OfflineBanner />
       
-      {/* NEW: Global Overlay for Admin Discount Requests */}
+      {/* NEW: Global Overlay for Admin layout.discount_requests */}
       {isAdmin && pendingDiscounts.length > 0 && (
         <div className="fixed bottom-6 right-6 rtl:left-6 rtl:right-auto z-[9999] flex flex-col gap-3 pointer-events-none">
           {pendingDiscounts.map(req => (
             <div key={req.id} className="bg-white rounded-xl shadow-2xl border-l-4 border-amber-500 p-4 w-80 pointer-events-auto animate-in slide-in-from-bottom-4 duration-300 text-start">
               <div className="flex items-center gap-2 text-amber-600 font-bold mb-2">
-                <ShieldAlert size={18}/> {t('layout.discount_request') || 'Discount Request'}
+                <ShieldAlert size={18}/> {t('layout.discount_request') || 'layout.discount_request'}
               </div>
               <div className="text-sm text-gray-700 font-medium mb-4 leading-relaxed">
                 <span className="font-bold text-gray-900">{req.cashier_name}</span> is requesting permission to manual discount <span className="font-bold text-gray-900">{req.product_name}</span> 
@@ -176,7 +176,7 @@ export default function Layout() {
                 <NavLink to="/admin/offers" className={navLinkClass} onClick={closeSidebar}><Tags size={18} /> {t('layout.sim_offers')}</NavLink>
                 <NavLink to="/admin/stock" className={navLinkClass} onClick={closeSidebar}><Layers size={18} /> {t('layout.sim_inventory')}</NavLink>
                 <NavLink to="/admin/products" className={navLinkClass} onClick={closeSidebar}><Package size={18} /> {t('layout.products')}</NavLink>
-                <NavLink to="/admin/barcode-settings" className={navLinkClass} onClick={closeSidebar}><Barcode size={18} /> Barcode Printing</NavLink>
+                <NavLink to="/admin/barcode-settings" className={navLinkClass} onClick={closeSidebar}><Barcode size={18} /> pos.barcode_printing</NavLink>
                 <NavLink to="/admin/users" className={navLinkClass} onClick={closeSidebar}><Users size={18} /> {t('layout.manage_users')}</NavLink>
                 <NavLink to="/admin/customers" className={navLinkClass} onClick={closeSidebar}><UsersRound size={18} /> {t('layout.customers')}</NavLink>
                 <NavLink to="/admin/finances" className={navLinkClass} onClick={closeSidebar}><Wallet size={18} /> {t('layout.finances')}</NavLink>

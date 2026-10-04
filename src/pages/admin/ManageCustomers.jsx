@@ -117,8 +117,8 @@ export default function ManageCustomers() {
     if (filteredCustomers.length === 0) return alert(t('common.no_data') || 'No customers to export.');
 
     const headers = [
-      t('modal.first_name') || 'First Name', 
-      t('modal.last_name') || 'Last Name', 
+      t('modal.first_name') || 'ussd.first_name', 
+      t('modal.last_name') || 'ussd.last_name', 
       t('reports.phone') || 'Phone', 
       t('manage.customer_tier') || 'Tier', 
       t('modal.profession') || 'Profession',
@@ -336,7 +336,8 @@ function ViewModal({ customer, loading, onClose, onEdit, onAdjustPoints, history
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2"><h2 className="text-[26px] font-black text-gray-900 tracking-tight">{customer.first_name} {customer.last_name}</h2><TierBadge tier={customer.tier || customer.stats?.tier} /></div>
                     <div className="text-sm font-medium text-gray-500 font-mono flex items-center gap-2"><Phone size={14}/> {customer.phone_number}</div>
-                    
+                    <div className="text-sm font-medium text-gray-500 font-mono flex items-center gap-2"><User size={14}/> {customer.custCode}</div>
+
                     <div className="space-y-2 mt-4 text-sm bg-gray-50 rounded-xl p-4 border border-gray-100 max-w-lg">
                       {customer.profession && <div className="flex items-start gap-3"><Briefcase size={16} className="text-gray-400 mt-0.5 shrink-0"/><span className="font-medium text-gray-800">{customer.profession}</span></div>}
                       {customer.address && <div className="flex items-start gap-3"><MapPin size={16} className="text-gray-400 mt-0.5 shrink-0"/><span className="font-medium text-gray-800">{customer.address}</span></div>}
@@ -462,7 +463,7 @@ function PopRemindersModal({ popData, selectedCycleTab, setSelectedCycleTab, onC
                 <tr className="border-b border-gray-100">
                   <th className="py-2 text-gray-500 uppercase text-xs">Customer</th>
                   <th className="py-2 text-gray-500 uppercase text-xs">Phone</th>
-                  <th className="py-2 text-gray-500 uppercase text-xs">Last Purchase</th>
+                  <th className="py-2 text-gray-500 uppercase text-xs">pos.last_purchase</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">

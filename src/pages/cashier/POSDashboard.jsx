@@ -95,7 +95,7 @@ export default function POSDashboard() {
 
   const handleOpenSession = async () => {
     try {
-      setActionStatus('Opening session...');
+      setActionStatus('pos.opening_session');
       const response = await api.post('/sessions', { cashier_id: user.id });
       setSession(response.data.data);
       await fetchSessionDetails(response.data.data.id);
@@ -107,7 +107,7 @@ export default function POSDashboard() {
     if (manualCashCount === '') { alert(t('pos.enter_physical_cash_alert')); return; }
     
     try {
-      setActionStatus('Closing session...');
+      setActionStatus('pos.closing_session');
       await api.post(`/sessions/${session.id}/close`, { 
         closing_cash: parseFloat(manualCashCount) 
       });
@@ -372,7 +372,7 @@ function PopRemindersModal({ popData, selectedCycleTab, setSelectedCycleTab, onC
                 <tr className="border-b border-gray-100">
                   <th className="py-2 text-gray-500 uppercase text-xs font-bold">Customer</th>
                   <th className="py-2 text-gray-500 uppercase text-xs font-bold">Phone</th>
-                  <th className="py-2 text-gray-500 uppercase text-xs font-bold">Last Purchase</th>
+                  <th className="py-2 text-gray-500 uppercase text-xs font-bold">pos.last_purchase</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">

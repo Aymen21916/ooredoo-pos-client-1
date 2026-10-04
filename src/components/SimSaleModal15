@@ -213,26 +213,26 @@ export default function SimSaleModal({ sessionId, catalog, onClose, onComplete }
                 <div className="mt-3 pt-3 border-t border-gray-200">
                   {discountRequestStatus === 'idle' && (
                     <button type="button" onClick={requestAdminDiscount} className="flex items-center gap-2 text-sm text-red-600 hover:text-red-800 font-bold transition-colors w-max bg-red-50 px-3 py-2 rounded-lg border border-red-200">
-                      <ShieldAlert size={16} /> {t('modal.request_discount_permission') || 'Request Admin Discount Permission'}
+                      <ShieldAlert size={16} /> {t('modal.request_discount_permission') || 'discount.request_permission'}
                     </button>
                   )}
                   
                   {discountRequestStatus === 'pending' && (
                     <div className="flex items-center gap-2 text-sm text-amber-600 font-bold animate-pulse bg-amber-50 px-3 py-2 rounded-lg border border-amber-200 w-max">
-                      <RefreshCw size={16} className="animate-spin" /> {t('modal.waiting_for_admin') || 'Waiting for Admin approval...'}
+                      <RefreshCw size={16} className="animate-spin" /> {t('modal.waiting_for_admin') || 'modal.waiting_for_admin'}
                     </div>
                   )}
 
                   {discountRequestStatus === 'rejected' && (
                     <div className="flex items-center gap-2 text-sm text-red-600 font-bold bg-red-50 px-3 py-2 rounded-lg border border-red-200 w-max">
-                      <X size={16} strokeWidth={3} /> {t('modal.discount_denied') || 'Permission Denied by Admin'}
+                      <X size={16} strokeWidth={3} /> {t('modal.discount_denied') || 'modal.discount_denied'}
                     </div>
                   )}
 
                   {discountRequestStatus === 'approved' && (
                     <div className="space-y-3 animate-in fade-in zoom-in duration-300">
                       <div className="flex items-center gap-2 text-sm text-green-700 font-bold bg-green-50 px-3 py-2 rounded-lg border border-green-200 w-max">
-                        <CheckCircle2 size={16} strokeWidth={3} /> {t('modal.discount_approved') || 'Discount Approved!'}
+                        <CheckCircle2 size={16} strokeWidth={3} /> {t('modal.discount_approved') || 'modal.discount_approved'}
                       </div>
                       <input 
                          type="number" min="0" step="1" 

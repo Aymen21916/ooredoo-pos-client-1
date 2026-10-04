@@ -189,7 +189,7 @@ export default function AdminExpenses() {
           onClick={() => setCreateOpen(true)}
           className="inline-flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700"
         >
-          <Plus size={16} /> Record expense
+          <Plus size={16} /> expense.record_btn
         </button>
       </div>
 

@@ -129,7 +129,7 @@ export default function CashierHistory() {
 
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 flex items-center gap-1.5">
-              <Calendar size={14} /> Date From
+              <Calendar size={14} /> range.date_from 
             </label>
             <input
               type="date"
@@ -142,7 +142,7 @@ export default function CashierHistory() {
 
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 flex items-center gap-1.5">
-              <Calendar size={14} /> Date To
+              <Calendar size={14} /> range.date_from 
             </label>
             <input
               type="date"

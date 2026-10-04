@@ -260,7 +260,7 @@ export default function SimSaleModal({ sessionId, catalog, onClose, onComplete }
   <input type="checkbox" checked={appInstalled} onChange={(e) => setAppInstalled(e.target.checked)}
     className="mt-0.5 h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500" />
   <span>
-    <span className="flex items-center gap-1.5 font-bold text-red-900"><Smartphone size={16} /> My Ooredoo App Installed</span>
+    <span className="flex items-center gap-1.5 font-bold text-red-900"><Smartphone size={16} /> sim.my_ooredoo_app_installed</span>
     <span className="block text-xs font-medium text-red-800/80 mt-0.5">Tick if you installed the My Ooredoo app for the customer with this SIM.</span>
   </span>
 </label>

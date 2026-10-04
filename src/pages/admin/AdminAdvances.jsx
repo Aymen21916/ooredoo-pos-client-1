@@ -576,7 +576,7 @@ function RepaymentModal({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Amount (DZD) <span className="text-red-600">*</span>
+              expense.amount_dzd  <span className="text-red-600">*</span>
             </label>
             <input
               type="number"

@@ -8,7 +8,7 @@ const PAGE_SIZE = 25;
 const formatDZD = (n) =>
   new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 2 }).format(n || 0);
 
-// Hides the "LEGACY-UNKNOWN" placeholder customer (no real phone number).
+// Hides the "LEGACY-UNKNOWN" placeholder customer (no real ussd.phone_number).
 const looksLikePhone = (p) => /\d{6,}/.test(p || '');
 
 export default function CustomerBrowser({ onSelect }) {
@@ -77,6 +77,7 @@ export default function CustomerBrowser({ onSelect }) {
               <th className={`${th} text-center w-12`}>#</th>
               <th className={`${th} text-start`}>{t('modal.name')}</th>
               <th className={`${th} text-start`}>{t('modal.phone')}</th>
+              <th className={`${th} text-start`}>Cust Code</th>
               <th className={`${th} text-start`}>Tier</th>
               <th className={`${th} text-end`}>{t('crm.available_points')}</th>
               <th className={`${th} text-end`}>{t('crm.total_sims')}</th>
@@ -105,6 +106,7 @@ export default function CustomerBrowser({ onSelect }) {
                     )}
                   </td>
                   <td className="py-3 px-4 font-mono text-gray-600">{c.phone_number}</td>
+                  <td className="py-3 px-4 font-mono text-gray-600">{c.cust_code}</td>
                   <td className="py-3 px-4 text-xs font-bold text-gray-600">{c.tier || '—'}</td>
                   <td className="py-3 px-4 text-end font-black text-indigo-700">{Math.floor(c.available_points || 0)}</td>
                   <td className="py-3 px-4 text-end font-bold text-gray-900">{c.sim_count || 0}</td>

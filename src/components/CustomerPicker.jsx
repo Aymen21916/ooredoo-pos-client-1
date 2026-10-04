@@ -77,7 +77,7 @@ export default function CustomerPicker({ onConfirm, onError }) {
       <div>
         <div className="rounded-xl border-2 border-green-200 bg-green-50 p-4 space-y-2">
           <div className="flex items-center gap-2 text-green-800 font-semibold">
-            <CheckCircle2 size={18} /> Customer found
+            <CheckCircle2 size={18} /> pop.customer_found
           </div>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm pt-2">
             <Kv icon={<User size={14} />}      label="Name"       value={`${foundCustomer.first_name} ${foundCustomer.last_name}`} />
@@ -103,13 +103,13 @@ export default function CustomerPicker({ onConfirm, onError }) {
             onClick={reset}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
           >
-            Different customer
+            ussd.different_customer
           </button>
           <button
             onClick={() => onConfirm(foundCustomer)}
             className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-md hover:bg-green-700"
           >
-            <CheckCircle2 size={16} /> Confirm & continue
+            <CheckCircle2 size={16} /> ussd.confirm_continue
           </button>
         </div>
       </div>
@@ -121,18 +121,18 @@ export default function CustomerPicker({ onConfirm, onError }) {
     return (
       <div>
         <p className="text-xs text-gray-500 mb-3">
-          No customer found with phone <span className="font-mono">{form.phone_number}</span>. Fill in the details to register them.
+          No pop.customer_found with phone <span className="font-mono">{form.phone_number}</span>. Fill in the details to register them.
         </p>
         <form onSubmit={handleCreate} className="space-y-3">
-          <Input label="Phone number" icon={<Phone size={14} />} value={form.phone_number} onChange={setField('phone_number')} required />
+          <Input label="ussd.phone_number" icon={<Phone size={14} />} value={form.phone_number} onChange={setField('phone_number')} required />
           <div className="grid grid-cols-2 gap-3">
-            <Input label="First name" icon={<User size={14} />} value={form.first_name} onChange={setField('first_name')} required />
-            <Input label="Last name"  icon={<User size={14} />} value={form.last_name}  onChange={setField('last_name')}  required />
+            <Input label="ussd.first_name" icon={<User size={14} />} value={form.first_name} onChange={setField('first_name')} required />
+            <Input label="ussd.last_name"  icon={<User size={14} />} value={form.last_name}  onChange={setField('last_name')}  required />
           </div>
           <Input label="Address"    icon={<MapPin size={14} />}    value={form.address}    onChange={setField('address')}    required />
           <Input label="Profession" icon={<Briefcase size={14} />} value={form.profession} onChange={setField('profession')} required />
           <div className="pt-2 flex justify-between">
-            <button type="button" onClick={reset} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Search again</button>
+            <button type="button" onClick={reset} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">ussd.search_again</button>
             <button type="submit" disabled={saving} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50">
               <Plus size={16} /> {saving ? 'Saving...' : 'Create & continue'}
             </button>
@@ -146,7 +146,7 @@ export default function CustomerPicker({ onConfirm, onError }) {
   return (
     <form onSubmit={handleLookup} className="space-y-3">
       <Input
-        label="Customer phone number"
+        label="Customer ussd.phone_number"
         icon={<Phone size={14} />}
         value={phoneInput}
         onChange={setPhoneInput}

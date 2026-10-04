@@ -183,7 +183,7 @@ export default function BarcodeSettings() {
     <div className="space-y-6 pb-12 text-start">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-4">
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Barcode className="text-red-600" /> Barcode Printing Settings
+          <Barcode className="text-red-600" /> pos.barcode_printing Settings
         </h1>
         <div className="flex flex-wrap items-center gap-3">
           <button

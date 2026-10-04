@@ -52,7 +52,7 @@ export default function RegisterExpenseModal({ mode = 'cashier', sessionId, stor
   const validationError = useMemo(() => {
     const trimmedDesc = description.trim();
     const num = Number(amount);
-    if (amount === '' || Number.isNaN(num)) return 'Amount is required.';
+    if (amount === '' || Number.isNaN(num)) return 'validation.amount_required';
     if (!Number.isFinite(num) || num < AMOUNT_MIN || num > AMOUNT_MAX) return 'Amount invalid.';
     if (!/^-?\d+(\.\d{1,2})?$/.test(String(amount).trim())) return 'Amount can have at most two decimal places.';
     if (trimmedDesc.length < DESC_MIN || trimmedDesc.length > DESC_MAX) return 'Description invalid.';
@@ -139,7 +139,7 @@ export default function RegisterExpenseModal({ mode = 'cashier', sessionId, stor
           )}
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">{t('expense.amount_dzd')}</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">{t('expense.amount_dzd ')}</label>
             <input type="number" inputMode="decimal" step="0.01" min={AMOUNT_MIN} max={AMOUNT_MAX} value={amount} onChange={(e) => { setAmount(e.target.value); setInsufficientBalance(null); }} placeholder="0.00" className="block w-full rounded-md border border-gray-300 px-3 py-2 text-base font-mono focus:border-red-500 focus:ring-red-500" required />
           </div>
 
