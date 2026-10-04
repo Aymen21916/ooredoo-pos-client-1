@@ -2,7 +2,8 @@ import { useState, useMemo, useRef } from 'react';
 import api from '../../api/axios';
 import { useAdminData } from '../../context/AdminDataContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { Package, Plus, Trash2, Pencil, X, AlertTriangle, Barcode, RefreshCw, Award, Upload, FileSpreadsheet, Search } from 'lucide-react';
+import { Package, Plus, Trash2, Pencil, X, AlertTriangle, Barcode, RefreshCw, Award, Upload, FileSpreadsheet, Search, Printer } from 'lucide-react';
+import { printLabels } from '../../utils/barcodePrint';
 
 export default function ManageProducts() {
   const { adminData, isPreloading, refreshAdminData } = useAdminData();
@@ -73,7 +74,26 @@ export default function ManageProducts() {
   };
 
   const promptDeactivate = async (id) => { if(!window.confirm(`Deactivate?`)) return; try { await api.delete(`/products/${id}`); await refreshAdminData(); } catch (err) { alert(t('common.action_failed')); } };
-
+  const handlePrintLabels = async (list) => {
+  try {
+    const res = await api.get('/settings/barcode-print');
+    const result = printLabels(list, res.data.data);
+    if (result.printed === 0) {
+      alert('Nothing to print: these products have no valid barcode.');
+      return;
+    }
+    const notes = [];
+    if (result.skipped.length) {
+      notes.push(`${result.skipped.length} product(s) skipped (missing or invalid barcode): ${result.skipped.slice(0, 5).map((p) => p.name).join(', ')}${result.skipped.length > 5 ? '…' : ''}`);
+    }
+    if (result.fallback.length) {
+      notes.push(`${result.fallback.length} product(s) were printed as Code 128 because their barcode doesn't fit the chosen format.`);
+    }
+    if (notes.length) alert(notes.join('\n'));
+  } catch (err) {
+    alert(err.response?.data?.message || t('common.action_failed'));
+  }
+};
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -127,6 +147,8 @@ export default function ManageProducts() {
             {isUploading ? t('manage.uploading') : t('manage.upload_excel')}
           </button>
           
+          <button onClick={() => handlePrintLabels(visibleProducts)} className="flex-1 sm:flex-none bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 flex items-center justify-center gap-2 transition-colors"><Printer size={16}/> Print labels</button>
+
           <button onClick={() => setIsAdding(!isAdding)} className="flex-1 sm:flex-none bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 flex items-center justify-center gap-2 shadow-sm transition-colors">
             <Plus size={16}/> {isAdding ? t('common.cancel') : t('manage.add_product')}
           </button>
@@ -217,7 +239,7 @@ export default function ManageProducts() {
                   <td className="p-4 text-sm font-bold text-green-700 text-end whitespace-nowrap">{formatDZD(p.commission_amount)}</td>
                   <td className="p-4 text-sm font-bold text-purple-600 text-end whitespace-nowrap">{p.loyalty_points || 0}</td>
                   <td className="p-4 text-center whitespace-nowrap"><span className={`px-2 py-1 text-[10px] font-black uppercase rounded-full ${p.is_active ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-500 border border-gray-200'}`}>{p.is_active ? t('common.active') : t('common.inactive')}</span></td>
-                  <td className="p-4 text-end whitespace-nowrap space-x-2"><button onClick={() => setEditingProduct(p)} className="text-blue-600 hover:bg-blue-50 p-1.5 rounded"><Pencil size={16}/></button>{p.is_active && <button onClick={() => promptDeactivate(p.id)} className="text-orange-500 hover:bg-orange-50 p-1.5 rounded"><AlertTriangle size={16}/></button>}</td>
+                  <td className="p-4 text-end whitespace-nowrap space-x-2"><button onClick={() => handlePrintLabels([p])} className="text-gray-600 hover:bg-gray-100 p-1.5 rounded" title="Print label"><Printer size={16}/></button><button onClick={() => setEditingProduct(p)} className="text-blue-600 hover:bg-blue-50 p-1.5 rounded"><Pencil size={16}/></button>{p.is_active && <button onClick={() => promptDeactivate(p.id)} className="text-orange-500 hover:bg-orange-50 p-1.5 rounded"><AlertTriangle size={16}/></button>}</td>
                 </tr>
               )
             })}

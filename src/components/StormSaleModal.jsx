@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { 
-  X, CheckCircle2, RefreshCw, User, Phone, MapPin, Briefcase, Zap, Search, Award, UserPlus, Percent, Bell 
+  X, CheckCircle2, RefreshCw, User, Phone, MapPin, Briefcase, Zap, Search, Award, UserPlus, Percent, Bell, Building2
 } from 'lucide-react';
 import api from '../api/axios';
 
@@ -25,6 +25,8 @@ export default function StormSaleModal({ sessionId, onClose, onComplete }) {
   const [newCustomerData, setNewCustomerData] = useState({ first_name: '', last_name: '', address: '', profession: '', referred_by_phone: '' });
   const [isPopNumber, setIsPopNumber] = useState(false);
   const [popCycle, setPopCycle] = useState(null);
+  const [clientType, setClientType] = useState(null); // null | 'regular' | 'corporate'
+  const [custCode, setCustCode] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -36,13 +38,14 @@ export default function StormSaleModal({ sessionId, onClose, onComplete }) {
   useEffect(() => {
     const searchCustomer = async () => {
       if (phoneNumber.length < 9) {
-        setSelectedCustomer(null); setPointsToRedeem(0); setIsPopNumber(false); setPopCycle(null); return;
+        setSelectedCustomer(null); setPointsToRedeem(0); setIsPopNumber(false); setPopCycle(null); setClientType(null); setCustCode(''); return;
       }
       setIsSearching(true);
       try {
         const { data } = await api.get(`/customers/lookup?phone=${phoneNumber}`);
         setSelectedCustomer(data.data || null);
         if (data.data?.is_pop) { setIsPopNumber(true); setPopCycle(data.data.pop_cycle || null); }
+        if (data.data?.client_type) { setClientType(data.data.client_type); setCustCode(data.data.cust_code || ''); }
         setPointsToRedeem(0);
       } catch (err) {
         setSelectedCustomer(null);
@@ -58,6 +61,11 @@ export default function StormSaleModal({ sessionId, onClose, onComplete }) {
     e.preventDefault();
     setLoading(true); setError('');
 
+if (phoneNumber.length >= 9 && clientType === 'corporate' && !custCode.trim()) {
+  setError('Please enter the corporate client custcode.');
+  setLoading(false);
+  return;
+}
 if (isPopNumber && phoneNumber.length >= 9 && !popCycle) {
   setError('Please choose a POP cycle.');
   setLoading(false);
@@ -96,7 +104,9 @@ if (isPopNumber && phoneNumber.length >= 9 && !popCycle) {
         note: note.trim() || '',
         points_redeemed: parseFloat(pointsToRedeem || 0),
         is_pop_number: phoneNumber.length >= 9 && isPopNumber,
-pop_cycle: phoneNumber.length >= 9 && isPopNumber ? popCycle : null,
+        pop_cycle: phoneNumber.length >= 9 && isPopNumber ? popCycle : null,
+        client_type: phoneNumber.length >= 9 ? clientType : null,
+        cust_code: phoneNumber.length >= 9 && clientType === 'corporate' ? custCode.trim() : null,
         discount_amount: showDiscount ? (parseFloat(discountAmount) || 0) : 0
       });
 
@@ -285,6 +295,54 @@ pop_cycle: phoneNumber.length >= 9 && isPopNumber ? popCycle : null,
     )}
   </div>
 )}
+
+            {phoneNumber.length >= 9 && (
+              <div className="p-4 border-2 border-sky-200 bg-sky-50 rounded-xl space-y-3">
+                <div className="text-[11px] font-black uppercase tracking-wider text-sky-800">Client type</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {[
+                    { key: 'regular', label: 'Regular client', Icon: User },
+                    { key: 'corporate', label: 'Corporate client', Icon: Building2 },
+                  ].map(({ key, label, Icon }) => (
+                    <label
+                      key={key}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg border-2 cursor-pointer select-none font-bold text-sm transition-colors ${
+                        clientType === key
+                          ? 'border-sky-500 bg-white text-sky-800'
+                          : 'border-sky-200 bg-sky-50 text-sky-900 hover:bg-white'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={clientType === key}
+                        onChange={(e) => {
+                          setClientType(e.target.checked ? key : null);
+                          if (!(e.target.checked && key === 'corporate')) setCustCode('');
+                        }}
+                        className="h-4 w-4 rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                      />
+                      <Icon size={16} /> {label}
+                    </label>
+                  ))}
+                </div>
+
+                {clientType === 'corporate' && (
+                  <div>
+                    <label className="block text-[11px] font-black uppercase tracking-wider text-sky-800 mb-1.5">
+                      Client custcode <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={custCode}
+                      onChange={(e) => setCustCode(e.target.value)}
+                      maxLength={30}
+                      placeholder="e.g. 1234567"
+                      className="w-full rounded-lg border-2 border-sky-200 bg-white px-3 py-2.5 text-sm font-bold font-mono text-gray-900 outline-none focus:border-sky-500"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="mt-6 flex flex-col items-end pt-5 border-t border-gray-200">
               <div className="text-sm font-bold text-gray-500 mb-1 uppercase tracking-wider">{t('modal.final_total')}</div>

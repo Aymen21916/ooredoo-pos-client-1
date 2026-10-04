@@ -24,6 +24,8 @@ import CashierHistory from './pages/admin/CashierHistory';
 import MonthlyTrends from './pages/admin/MonthlyTrends';
 import LoyaltySettings from './pages/admin/LoyaltySettings';
 import ManageSimStock from './pages/admin/ManageSimStock';
+import BarcodeSettings from './pages/admin/BarcodeSettings';
+
 
 function App() {
   return (
@@ -63,6 +65,7 @@ function App() {
                     <Route path="/admin/audit" element={<AuditLog />} />
                     <Route path="/admin/loyalty" element={<LoyaltySettings />} />
                     <Route path="/admin/stock" element={<ManageSimStock />} />
+                    <Route path="/admin/barcode-settings" element={<BarcodeSettings />} />
                   </Route>
 
                 </Route>

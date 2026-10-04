@@ -6,7 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 import {
   LogOut, UserCircle, LayoutDashboard, Users, UsersRound, Tags,
   Package, MonitorDot, Wallet, FileText, HandCoins, Receipt, 
-  BarChart3, TrendingUp, History, Activity, Menu, X, Layers, Globe, ShieldAlert, CheckCircle2
+  BarChart3, TrendingUp, History, Activity, Menu, X, Layers, Globe, ShieldAlert, CheckCircle2, Barcode
 } from 'lucide-react';
 import OfflineBanner from './OfflineBanner';
 
@@ -176,6 +176,7 @@ export default function Layout() {
                 <NavLink to="/admin/offers" className={navLinkClass} onClick={closeSidebar}><Tags size={18} /> {t('layout.sim_offers')}</NavLink>
                 <NavLink to="/admin/stock" className={navLinkClass} onClick={closeSidebar}><Layers size={18} /> {t('layout.sim_inventory')}</NavLink>
                 <NavLink to="/admin/products" className={navLinkClass} onClick={closeSidebar}><Package size={18} /> {t('layout.products')}</NavLink>
+                <NavLink to="/admin/barcode-settings" className={navLinkClass} onClick={closeSidebar}><Barcode size={18} /> Barcode Printing</NavLink>
                 <NavLink to="/admin/users" className={navLinkClass} onClick={closeSidebar}><Users size={18} /> {t('layout.manage_users')}</NavLink>
                 <NavLink to="/admin/customers" className={navLinkClass} onClick={closeSidebar}><UsersRound size={18} /> {t('layout.customers')}</NavLink>
                 <NavLink to="/admin/finances" className={navLinkClass} onClick={closeSidebar}><Wallet size={18} /> {t('layout.finances')}</NavLink>

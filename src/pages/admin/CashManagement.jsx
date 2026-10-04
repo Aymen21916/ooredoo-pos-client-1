@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import { useLanguage } from '../../context/LanguageContext';
 import { Wallet, Coins, Gift, Building2, PlusCircle, RefreshCw, X, CheckCircle2, ArrowRightLeft, ShieldCheck, AlertTriangle, FileEdit } from 'lucide-react';
+import ManualLedgerHistory from './ManualLedgerHistory';
 
 export default function CashManagement() {
   const { t } = useLanguage();
@@ -15,6 +16,12 @@ export default function CashManagement() {
   
   const [activeModal, setActiveModal] = useState(null); 
   const [formData, setFormData] = useState({ amount: '', actionType: 'RECHARGE', note: '' });
+  const [ledgerRange, setLedgerRange] = useState(() => {
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const today = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    return { from: `${today.slice(0, 7)}-01`, to: today };
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => { fetchFinancials(); }, []);
@@ -231,6 +238,8 @@ export default function CashManagement() {
           </div>
         </>
       )}
+
+      <ManualLedgerHistory range={ledgerRange} onRangeChange={setLedgerRange} />
     </div>
   );
 }
