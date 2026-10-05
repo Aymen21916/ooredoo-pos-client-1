@@ -25,6 +25,7 @@ import MonthlyTrends from './pages/admin/MonthlyTrends';
 import LoyaltySettings from './pages/admin/LoyaltySettings';
 import ManageSimStock from './pages/admin/ManageSimStock';
 import BarcodeSettings from './pages/admin/BarcodeSettings';
+import RegisterLedger from './pages/admin/RegisterLedger';
 
 
 function App() {
@@ -66,6 +67,7 @@ function App() {
                     <Route path="/admin/loyalty" element={<LoyaltySettings />} />
                     <Route path="/admin/stock" element={<ManageSimStock />} />
                     <Route path="/admin/barcode-settings" element={<BarcodeSettings />} />
+                    <Route path="/admin/register-ledger" element={<RegisterLedger />} />
                   </Route>
 
                 </Route>

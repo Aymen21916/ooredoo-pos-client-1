@@ -6,7 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 import {
   LogOut, UserCircle, LayoutDashboard, Users, UsersRound, Tags,
   Package, MonitorDot, Wallet, FileText, HandCoins, Receipt, 
-  BarChart3, TrendingUp, History, Activity, Menu, X, Layers, Globe, ShieldAlert, CheckCircle2, Barcode
+  BarChart3, TrendingUp, History, Activity, Menu, X, Layers, Globe, ShieldAlert, CheckCircle2, Barcode, Landmark
 } from 'lucide-react';
 import OfflineBanner from './OfflineBanner';
 
@@ -180,6 +180,7 @@ export default function Layout() {
                 <NavLink to="/admin/users" className={navLinkClass} onClick={closeSidebar}><Users size={18} /> {t('layout.manage_users')}</NavLink>
                 <NavLink to="/admin/customers" className={navLinkClass} onClick={closeSidebar}><UsersRound size={18} /> {t('layout.customers')}</NavLink>
                 <NavLink to="/admin/finances" className={navLinkClass} onClick={closeSidebar}><Wallet size={18} /> {t('layout.finances')}</NavLink>
+                <NavLink to="/admin/register-ledger" className={navLinkClass} onClick={closeSidebar}><Landmark size={18} /> Register Ledger</NavLink>
                 <NavLink to="/admin/advances" className={navLinkClass} onClick={closeSidebar}><HandCoins size={18} /> {t('layout.advances')}</NavLink>
                 <NavLink to="/admin/expenses" className={navLinkClass} onClick={closeSidebar}><Receipt size={18} /> {t('layout.expenses')}</NavLink>
                 <NavLink to="/admin/loyalty" className={navLinkClass} onClick={closeSidebar}><Receipt size={18} /> {t('layout.loyalty')}</NavLink>
