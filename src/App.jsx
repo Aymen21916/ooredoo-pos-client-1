@@ -26,6 +26,7 @@ import LoyaltySettings from './pages/admin/LoyaltySettings';
 import ManageSimStock from './pages/admin/ManageSimStock';
 import BarcodeSettings from './pages/admin/BarcodeSettings';
 import RegisterLedger from './pages/admin/RegisterLedger';
+import CustomerValidation from './pages/admin/CustomerValidation';
 
 
 function App() {
@@ -68,6 +69,7 @@ function App() {
                     <Route path="/admin/stock" element={<ManageSimStock />} />
                     <Route path="/admin/barcode-settings" element={<BarcodeSettings />} />
                     <Route path="/admin/register-ledger" element={<RegisterLedger />} />
+                    <Route path="/admin/customer-validation" element={<CustomerValidation />} />
                   </Route>
 
                 </Route>

@@ -161,7 +161,7 @@ export const translations = {
     "receipt.points_used": "Points Used:",
     "receipt.new_balance": "New Balance:",
     "receipt.thank_you": "THANK YOU FOR YOUR VISIT!",
-    "receipt.merci": "Merci pour votre fidélité.",
+    "receipt.merci": "Thank you for your loyalty.",
     "expense.title": "Record register expense",
     "expense.not_enough_cash": "Not enough cash in the register.",
     "expense.current_balance": "Current balance:",
@@ -363,7 +363,7 @@ export const translations = {
     "daily.storm_revenue": "Storm revenue",
     "daily.commissions": "Commissions",
     "daily.points_generated": "Points generated",
-    
+
     "range.title": "Date-Range Reports",
     "range.subtitle": "Aggregate and analyze live POS activity across custom time periods.",
     "range.date_from": "Date From",
@@ -378,7 +378,7 @@ export const translations = {
     "range.profit_decomp": "Profit Decomposition",
     "range.sim_profit": "SIM Profit",
     "range.acc_profit": "Accessory Profit",
-    "range.prelevement": "Prélevement",
+    "range.prelevement": "Withdrawals",
     "range.live_cash_flow": "Live Cash Flow",
     "range.advances": "Advances",
     "range.repayments": "Repayments",
@@ -400,6 +400,7 @@ export const translations = {
     "range.util_bills": "Utility & Bills",
     "range.store_inv": "Store Inventory",
     "range.other_exp": "Other Expenses",
+
     "trends.title": "Monthly Trends",
     "trends.subtitle": "Analyze your revenue, profit margins, and top-performing cashiers.",
     "trends.all_stores": "All stores",
@@ -408,6 +409,7 @@ export const translations = {
     "trends.cashier_leaderboard": "Cashier Leaderboard",
     "trends.top_offers": "Top Selling Offers",
     "trends.top_accessories": "Top Accessories",
+
     "common.save": "Save",
     "common.saving": "Saving...",
     "common.add": "Add",
@@ -433,7 +435,7 @@ export const translations = {
     "loyalty.pt_value": "1 Point Value (DZD)",
     "loyalty.expiry": "Point Expiry (Days)",
     "loyalty.tier_thresholds": "Lifetime Tier Thresholds",
-    
+
     "manage.customers_title": "Customer Loyalty & CRM",
     "manage.add_customer": "Add Customer",
     "manage.pop_reminders": "POP Storm Reminders",
@@ -455,12 +457,12 @@ export const translations = {
     "manage.cashier_comm": "Cashier Comm.",
     "manage.commission": "Commission",
     "manage.loyalty_pts": "Loyalty Pts",
-    
+
     "manage.products_title": "Manage Products",
     "manage.add_product": "Add Product",
     "manage.reg_new_product": "Register New Product",
     "manage.barcode": "Barcode",
-    
+
     "manage.stock_title": "Store SIM Distribution",
     "manage.admin_vault": "Master Admin Vault",
     "manage.update_vault": "Update Vault",
@@ -500,7 +502,6 @@ export const translations = {
     "ussd.address": "Address",
     "ussd.profession": "Profession",
     "ussd.recording": "Recording...",
-    "ussd.creating": "Creating...",
 
     "range.advances_taken": "Advances Taken",
     "range.repayments_made": "Repayments Made",
@@ -518,7 +519,7 @@ export const translations = {
     "crm.silver": "Silver",
     "crm.bronze": "Bronze",
     "crm.regular": "Regular",
-    
+
     "admin.view_ledger": "View Live Ledger",
     "admin.live_ledger_for": "Live Ledger for",
 
@@ -541,6 +542,81 @@ export const translations = {
     "layout.original_price": "Original Price",
     "layout.approve": "Approve",
     "layout.reject": "Reject",
+
+    // ===================== NEW KEYS (hard-coded English found in code) =====================
+    "layout.register_ledger": "Register Ledger",
+    "layout.role_admin": "Admin",
+    "layout.role_cashier": "Cashier",
+    "pos.barcode_printing": "Barcode Printing",
+    "offline.banner": "You are offline. Transactions cannot be saved until the connection is restored.",
+
+    "pos.opening_session": "Opening...",
+    "pos.closing_session": "Closing...",
+    "pos.open_session_failed": "Failed to open session",
+    "pos.close_session_failed": "Failed to close session",
+
+    "pop.reminders": "POP Reminders",
+    "pop.renewals": "POP Renewals",
+    "pop.last_purchase": "Last Purchase",
+    "pop.no_renewals": "No POP renewals due for this cycle.",
+
+    "storm.pop_number": "Ooredoo POP number",
+    "storm.pop_hint": "Adds this customer to the POP customers and to the POP renewal alerts.",
+    "storm.choose_cycle": "Choose the cycle that suits the client",
+    "storm.cycle": "Cycle",
+    "storm.client_type": "Client type",
+    "storm.client_regular": "Regular client",
+    "storm.client_corporate": "Corporate client",
+    "storm.custcode": "Client custcode",
+    "storm.example_note": "e.g. Flexy",
+    "storm.example_custcode": "e.g. 1234567",
+
+    "sim.my_ooredoo_app_installed": "My Ooredoo app installed",
+    "sim.my_ooredoo_app_hint": "Tick if you installed the My Ooredoo app for the customer with this SIM.",
+
+    "picker.lookup_customer": "Look up customer",
+    "picker.customer_phone": "Customer phone number",
+
+    "salary.my_salary": "My salary",
+    "salary.base": "Base salary",
+    "salary.app_commission": "My Ooredoo app",
+
+    "discount.request_failed": "Failed to request discount permission.",
+
+    "common.not_available": "N/A",
+    "common.currency_dzd": "DZD",
+    "common.searching": "Searching...",
+    "common.example_amount": "e.g. 1000",
+    "common.example_amount_decimal": "e.g. 1500.00",
+    "common.example_phone": "e.g. 055...",
+
+    "ussd.error_expired": "Error: Expired USSD Session (60s timeout)",
+    "ussd.error_prefix": "Error:",
+    "ussd.error_invalid_response": "Invalid response from server",
+    "ussd.error_network": "Network error occurred.",
+    "ussd.error_failed_prefix": "Failed:",
+
+    "validation.amount_required": "Amount is required.",
+    "validation.invalid_amount": "Invalid amount.",
+    "validation.amount_decimals": "Amount must be a number with at most two decimal places.",
+    "validation.amount_positive_decimals": "Amount must be a positive number with up to 2 decimal places.",
+    "validation.amount_not_number": "Amount must be a valid number.",
+    "validation.amount_min": "Amount must be at least {min} DZD.",
+    "validation.amount_max": "Amount must not exceed {max} DZD.",
+    "validation.amount_between": "Amount must be between {min} and {max}.",
+    "validation.description_max": "Description must be at most {max} characters.",
+    "validation.description_invalid": "Invalid description.",
+    "validation.category_invalid": "Invalid category.",
+    "validation.note_max": "Note must be at most {max} characters.",
+    "validation.reason_length": "Reason must be between 1 and 500 characters.",
+    "validation.choose_store": "Please choose a store.",
+    "validation.choose_date": "Please choose an expense date.",
+    "validation.date_future": "Expense date cannot be in the future.",
+    "validation.corporate_code_required": "Please enter the corporate client custcode.",
+    "validation.pop_cycle_required": "Please choose a POP cycle.",
+    "validation.lookup_failed": "Lookup failed.",
+    "validation.customer_exists": "A customer with that phone already exists. Please confirm.",
+    "validation.customer_save_failed": "Failed to save customer."
 },
   fr: {
     "layout.logout": "Déconnexion",
@@ -979,7 +1055,7 @@ export const translations = {
     "loyalty.pt_value": "Valeur d'1 Point (DZD)",
     "loyalty.expiry": "Expiration des Points (Jours)",
     "loyalty.tier_thresholds": "Seuils de Niveaux (À vie)",
-    
+
     "manage.customers_title": "Fidélité Client & CRM",
     "manage.add_customer": "Ajouter Client",
     "manage.pop_reminders": "Rappels Storm POP",
@@ -1001,12 +1077,12 @@ export const translations = {
     "manage.cashier_comm": "Comm. Caissier",
     "manage.commission": "Commission",
     "manage.loyalty_pts": "Pts Fidélité",
-    
+
     "manage.products_title": "Gérer les Produits",
     "manage.add_product": "Ajouter Produit",
     "manage.reg_new_product": "Nouveau Produit",
     "manage.barcode": "Code-barres",
-    
+
     "manage.stock_title": "Distribution SIM par Boutique",
     "manage.admin_vault": "Coffre Admin Principal",
     "manage.update_vault": "Mettre à jour le coffre",
@@ -1045,7 +1121,6 @@ export const translations = {
     "ussd.address": "Adresse",
     "ussd.profession": "Profession",
     "ussd.recording": "Enregistrement...",
-    "ussd.creating": "Création...",
 
     "range.advances_taken": "Avances Prises",
     "range.repayments_made": "Remboursements Effectués",
@@ -1086,6 +1161,81 @@ export const translations = {
     "layout.original_price": "Prix d'origine",
     "layout.approve": "Approuver",
     "layout.reject": "Refuser",
+
+    // ===================== NEW KEYS (hard-coded English found in code) =====================
+    "layout.register_ledger": "Registre de Caisse",
+    "layout.role_admin": "Admin",
+    "layout.role_cashier": "Caissier",
+    "pos.barcode_printing": "Impression des Codes-barres",
+    "offline.banner": "Vous êtes hors ligne. Les transactions ne peuvent pas être enregistrées tant que la connexion n'est pas rétablie.",
+
+    "pos.opening_session": "Ouverture...",
+    "pos.closing_session": "Clôture...",
+    "pos.open_session_failed": "Échec de l'ouverture de la session",
+    "pos.close_session_failed": "Échec de la clôture de la session",
+
+    "pop.reminders": "Rappels POP",
+    "pop.renewals": "Renouvellements POP",
+    "pop.last_purchase": "Dernier Achat",
+    "pop.no_renewals": "Aucun renouvellement POP prévu pour ce cycle.",
+
+    "storm.pop_number": "Numéro Ooredoo POP",
+    "storm.pop_hint": "Ajoute ce client aux clients POP et aux alertes de renouvellement POP.",
+    "storm.choose_cycle": "Choisissez le cycle adapté au client",
+    "storm.cycle": "Cycle",
+    "storm.client_type": "Type de client",
+    "storm.client_regular": "Client standard",
+    "storm.client_corporate": "Client entreprise",
+    "storm.custcode": "Code client (custcode)",
+    "storm.example_note": "ex: Flexy",
+    "storm.example_custcode": "ex: 1234567",
+
+    "sim.my_ooredoo_app_installed": "Application My Ooredoo installée",
+    "sim.my_ooredoo_app_hint": "Cochez si vous avez installé l'application My Ooredoo pour le client avec cette SIM.",
+
+    "picker.lookup_customer": "Rechercher le client",
+    "picker.customer_phone": "Numéro de téléphone du client",
+
+    "salary.my_salary": "Mon salaire",
+    "salary.base": "Salaire de base",
+    "salary.app_commission": "Application My Ooredoo",
+
+    "discount.request_failed": "Échec de la demande d'autorisation de remise.",
+
+    "common.not_available": "N/D",
+    "common.currency_dzd": "DZD",
+    "common.searching": "Recherche...",
+    "common.example_amount": "ex: 1000",
+    "common.example_amount_decimal": "ex: 1500.00",
+    "common.example_phone": "ex: 055...",
+
+    "ussd.error_expired": "Erreur : Session USSD expirée (délai de 60s)",
+    "ussd.error_prefix": "Erreur :",
+    "ussd.error_invalid_response": "Réponse invalide du serveur",
+    "ussd.error_network": "Une erreur réseau est survenue.",
+    "ussd.error_failed_prefix": "Échec :",
+
+    "validation.amount_required": "Le montant est obligatoire.",
+    "validation.invalid_amount": "Montant invalide.",
+    "validation.amount_decimals": "Le montant doit être un nombre avec au maximum deux décimales.",
+    "validation.amount_positive_decimals": "Le montant doit être un nombre positif avec jusqu'à 2 décimales.",
+    "validation.amount_not_number": "Le montant doit être un nombre valide.",
+    "validation.amount_min": "Le montant doit être d'au moins {min} DZD.",
+    "validation.amount_max": "Le montant ne doit pas dépasser {max} DZD.",
+    "validation.amount_between": "Le montant doit être compris entre {min} et {max}.",
+    "validation.description_max": "La description ne doit pas dépasser {max} caractères.",
+    "validation.description_invalid": "Description invalide.",
+    "validation.category_invalid": "Catégorie invalide.",
+    "validation.note_max": "La note ne doit pas dépasser {max} caractères.",
+    "validation.reason_length": "La raison doit contenir entre 1 et 500 caractères.",
+    "validation.choose_store": "Veuillez choisir une boutique.",
+    "validation.choose_date": "Veuillez choisir une date de dépense.",
+    "validation.date_future": "La date de la dépense ne peut pas être dans le futur.",
+    "validation.corporate_code_required": "Veuillez saisir le custcode du client entreprise.",
+    "validation.pop_cycle_required": "Veuillez choisir un cycle POP.",
+    "validation.lookup_failed": "Échec de la recherche.",
+    "validation.customer_exists": "Un client avec ce numéro existe déjà. Veuillez confirmer.",
+    "validation.customer_save_failed": "Échec de l'enregistrement du client."
 },
   ar: {
     "layout.logout": "تسجيل الخروج",
@@ -1524,7 +1674,7 @@ export const translations = {
     "loyalty.pt_value": "قيمة النقطة الواحدة (د.ج)",
     "loyalty.expiry": "صلاحية النقاط (بالأيام)",
     "loyalty.tier_thresholds": "مستويات الولاء مدى الحياة",
-    
+
     "manage.customers_title": "إدارة الزبائن والولاء",
     "manage.add_customer": "إضافة زبون",
     "manage.pop_reminders": "تذكيرات POP Storm",
@@ -1546,12 +1696,12 @@ export const translations = {
     "manage.cashier_comm": "عمولة الصندوق",
     "manage.commission": "العمولة",
     "manage.loyalty_pts": "نقاط الولاء",
-    
+
     "manage.products_title": "إدارة المنتجات",
     "manage.add_product": "إضافة منتج",
     "manage.reg_new_product": "تسجيل منتج جديد",
     "manage.barcode": "الباركود",
-    
+
     "manage.stock_title": "توزيع شرائح SIM للمحلات",
     "manage.admin_vault": "مخزن الإدارة الرئيسي",
     "manage.update_vault": "تحديث المخزن",
@@ -1590,7 +1740,6 @@ export const translations = {
     "ussd.address": "العنوان",
     "ussd.profession": "المهنة",
     "ussd.recording": "جاري التسجيل...",
-    "ussd.creating": "جاري الإنشاء...",
 
     "range.advances_taken": "السلف المسحوبة",
     "range.repayments_made": "السدادات المنجزة",
@@ -1611,7 +1760,7 @@ export const translations = {
 
     "admin.view_ledger": "عرض السجل المباشر",
     "admin.live_ledger_for": "السجل المباشر لـ",
-    
+
     "manage.stock": "كمية المخزون",
     "manage.upload_excel": "رفع ملف Excel",
     "manage.uploading": "جاري الرفع...",
@@ -1631,5 +1780,80 @@ export const translations = {
     "layout.original_price": "السعر الأصلي",
     "layout.approve": "موافقة",
     "layout.reject": "رفض",
+
+    // ===================== NEW KEYS (hard-coded English found in code) =====================
+    "layout.register_ledger": "سجل الصندوق",
+    "layout.role_admin": "مسؤول",
+    "layout.role_cashier": "أمين الصندوق",
+    "pos.barcode_printing": "طباعة الباركود",
+    "offline.banner": "أنت غير متصل بالإنترنت. لا يمكن حفظ المعاملات حتى تعود الخدمة.",
+
+    "pos.opening_session": "جاري الفتح...",
+    "pos.closing_session": "جاري الإغلاق...",
+    "pos.open_session_failed": "فشل فتح الجلسة",
+    "pos.close_session_failed": "فشل إغلاق الجلسة",
+
+    "pop.reminders": "تذكيرات POP",
+    "pop.renewals": "تجديدات POP",
+    "pop.last_purchase": "آخر عملية شراء",
+    "pop.no_renewals": "لا توجد تجديدات POP مستحقة لهذه الدورة.",
+
+    "storm.pop_number": "رقم Ooredoo POP",
+    "storm.pop_hint": "يضيف هذا الزبون إلى زبائن POP وإلى تنبيهات تجديد POP.",
+    "storm.choose_cycle": "اختر الدورة المناسبة للزبون",
+    "storm.cycle": "الدورة",
+    "storm.client_type": "نوع الزبون",
+    "storm.client_regular": "زبون عادي",
+    "storm.client_corporate": "زبون مؤسسة",
+    "storm.custcode": "رمز الزبون (custcode)",
+    "storm.example_note": "مثال: Flexy",
+    "storm.example_custcode": "مثال: 1234567",
+
+    "sim.my_ooredoo_app_installed": "تم تثبيت تطبيق My Ooredoo",
+    "sim.my_ooredoo_app_hint": "ضع علامة إذا قمت بتثبيت تطبيق My Ooredoo للزبون مع هذه الشريحة.",
+
+    "picker.lookup_customer": "البحث عن الزبون",
+    "picker.customer_phone": "رقم هاتف الزبون",
+
+    "salary.my_salary": "راتبي",
+    "salary.base": "الراتب الأساسي",
+    "salary.app_commission": "تطبيق My Ooredoo",
+
+    "discount.request_failed": "فشل طلب إذن الخصم.",
+
+    "common.not_available": "غير متوفر",
+    "common.currency_dzd": "د.ج",
+    "common.searching": "جاري البحث...",
+    "common.example_amount": "مثال: 1000",
+    "common.example_amount_decimal": "مثال: 1500.00",
+    "common.example_phone": "مثال: 055...",
+
+    "ussd.error_expired": "خطأ: انتهت صلاحية جلسة USSD (مهلة 60 ثانية)",
+    "ussd.error_prefix": "خطأ:",
+    "ussd.error_invalid_response": "استجابة غير صالحة من الخادم",
+    "ussd.error_network": "حدث خطأ في الشبكة.",
+    "ussd.error_failed_prefix": "فشل:",
+
+    "validation.amount_required": "المبلغ مطلوب.",
+    "validation.invalid_amount": "مبلغ غير صالح.",
+    "validation.amount_decimals": "يجب أن يكون المبلغ رقماً بحد أقصى منزلتين عشريتين.",
+    "validation.amount_positive_decimals": "يجب أن يكون المبلغ رقماً موجباً بحد أقصى منزلتين عشريتين.",
+    "validation.amount_not_number": "يجب أن يكون المبلغ رقماً صالحاً.",
+    "validation.amount_min": "يجب ألا يقل المبلغ عن {min} د.ج.",
+    "validation.amount_max": "يجب ألا يتجاوز المبلغ {max} د.ج.",
+    "validation.amount_between": "يجب أن يكون المبلغ بين {min} و{max}.",
+    "validation.description_max": "يجب ألا يتجاوز الوصف {max} حرفاً.",
+    "validation.description_invalid": "وصف غير صالح.",
+    "validation.category_invalid": "فئة غير صالحة.",
+    "validation.note_max": "يجب ألا تتجاوز الملاحظة {max} حرفاً.",
+    "validation.reason_length": "يجب أن يتراوح السبب بين 1 و500 حرف.",
+    "validation.choose_store": "يرجى اختيار محل.",
+    "validation.choose_date": "يرجى اختيار تاريخ المصروف.",
+    "validation.date_future": "لا يمكن أن يكون تاريخ المصروف في المستقبل.",
+    "validation.corporate_code_required": "يرجى إدخال رمز (custcode) زبون المؤسسة.",
+    "validation.pop_cycle_required": "يرجى اختيار دورة POP.",
+    "validation.lookup_failed": "فشل البحث.",
+    "validation.customer_exists": "يوجد زبون بهذا الرقم مسبقاً. يرجى التأكيد.",
+    "validation.customer_save_failed": "فشل حفظ الزبون."
 }
 };

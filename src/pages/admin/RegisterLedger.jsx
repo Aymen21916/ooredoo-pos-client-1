@@ -21,33 +21,49 @@ const formatDateTime = (s) =>
 
 const selectCls = 'w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-red-500 focus:ring-red-500';
 
-// ─── Summary ─────────────────────────────────────────────────────────────────
-export function SummaryCards({ summary }) {
-  const remaining = Number(summary.remaining) || 0;
+export function SummaryCards({ summary, stores = [], selectedStoreId }) {
+  // Determine which stores to calculate the balance for based on the filter
+  const targetStores = selectedStoreId
+    ? stores.filter(s => String(s.id) === String(selectedStoreId))
+    : stores;
+
+  // Calculate the true, unfiltered remaining balance
+  const realRemaining = targetStores.reduce((acc, s) => acc + Number(s.balance || 0), 0);
+
+  // Build the tooltip text containing the breakdown of all stores
+  const tooltipText = stores.map(s => `${s.name}: ${formatDZD(s.balance)}`).join('\n');
+
   return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200 flex items-center gap-4">
-            <div className="h-11 w-11 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center"><ArrowDownToLine size={22} /></div>
-            <div>
-              <div className="text-xs font-bold uppercase tracking-wider text-gray-500">Total money collected</div>
-              <div className="text-2xl font-extrabold text-emerald-700" data-testid="collected">{formatDZD(summary.collected)}</div>
-            </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200 flex items-center gap-4">
+        <div className="h-11 w-11 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center"><ArrowDownToLine size={22} /></div>
+        <div>
+          <div className="text-xs font-bold uppercase tracking-wider text-gray-500">Total money collected</div>
+          <div className="text-2xl font-extrabold text-emerald-700" data-testid="collected">{formatDZD(summary.collected)}</div>
+        </div>
+      </div>
+      <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200 flex items-center gap-4">
+        <div className="h-11 w-11 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center"><ArrowUpFromLine size={22} /></div>
+        <div>
+          <div className="text-xs font-bold uppercase tracking-wider text-gray-500">Total taken by admin</div>
+          <div className="text-2xl font-extrabold text-amber-700" data-testid="taken">{formatDZD(summary.taken)}</div>
+        </div>
+      </div>
+      
+      {/* Updated third card with title attribute for hover tooltip */}
+      <div 
+        className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200 flex items-center gap-4 cursor-help transition-colors hover:bg-sky-50"
+        title={`Amount by store:\n${tooltipText}`}
+      >
+        <div className="h-11 w-11 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center"><Wallet size={22} /></div>
+        <div>
+          <div className="text-xs font-bold uppercase tracking-wider text-gray-500">Still in the register (not taken)</div>
+          <div className={`text-2xl font-extrabold ${realRemaining < 0 ? 'text-red-600' : 'text-sky-700'}`} data-testid="remaining">
+            {formatDZD(realRemaining)}
           </div>
-          <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200 flex items-center gap-4">
-            <div className="h-11 w-11 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center"><ArrowUpFromLine size={22} /></div>
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-gray-500">Total taken by admin</div>
-                <div className="text-2xl font-extrabold text-amber-700" data-testid="taken">{formatDZD(summary.taken)}</div>
-              </div>
-            </div>
-          <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200 flex items-center gap-4">
-            <div className="h-11 w-11 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center"><Wallet size={22} /></div>
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-gray-500">Still in the register (not taken)</div>
-                <div className={`text-2xl font-extrabold ${remaining < 0 ? 'text-red-600' : 'text-sky-700'}`} data-testid="remaining">{formatDZD(remaining)}</div>
-              </div>
-            </div>
-          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -407,10 +423,14 @@ export default function RegisterLedger() {
         </div>
       )}
 
-      <SummaryCards summary={data.summary} />
+      {/* Pass the stores list and current store filter to calculate the true balance */}
+      <SummaryCards 
+        summary={data.summary} 
+        stores={options.stores} 
+        selectedStoreId={filters.store_id} 
+      />
       <p className="-mt-3 text-xs text-gray-500">
-        These totals follow the Store, User and date filters (active entries only, whatever the status filters say).
-        {hasFilters ? ' Clear the filters to see the real amount still in the registers.' : ''}
+        "Collected" and "Taken" follow the selected filters. "Still in the register" always reflects the true current balance.
       </p>
 
       {/* Filters */}
@@ -432,11 +452,11 @@ export default function RegisterLedger() {
           </div>
           <div>
             <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-500">From</label>
-            <input type="date" value={filters.from} onChange={(e) => setFilter('from', e.target.value)} className={selectCls} />
+            <input type="datetime-local" value={filters.from} onChange={(e) => setFilter('from', e.target.value)} className={selectCls} />
           </div>
           <div>
             <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-500">To</label>
-            <input type="date" value={filters.to} onChange={(e) => setFilter('to', e.target.value)} className={selectCls} />
+            <input type="datetime-local" value={filters.to} onChange={(e) => setFilter('to', e.target.value)} className={selectCls} />
           </div>
           <div>
             <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-500">Void Status</label>

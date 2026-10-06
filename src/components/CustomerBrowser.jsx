@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import api from '../api/axios';
 import { useLanguage } from '../context/LanguageContext';
-import { Search, RefreshCw, Bell, ChevronLeft, ChevronRight, UsersRound, Eye } from 'lucide-react';
+import { Search, RefreshCw, Bell, ChevronLeft, ChevronRight, UsersRound, Eye, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useSearchParams } from 'react-router-dom';
+import CustomerCorrectionForm from './CustomerCorrectionForm';
+import { notifyCorrectionsChanged } from '../hooks/useCorrectionAlerts';
 const PAGE_SIZE = 25;
 
 const formatDZD = (n) =>
@@ -16,6 +19,10 @@ export default function CustomerBrowser({ onSelect }) {
   const { t } = useLanguage();
   const [q, setQ] = useState('');
   const [popOnly, setPopOnly] = useState(false);
+  // "Needs correction only" (the banner links here with ?correction=1)
+  const [searchParams] = useSearchParams();
+  const [needsOnly, setNeedsOnly] = useState(searchParams.get('correction') === '1');
+  useEffect(() => { if (searchParams.get('correction') === '1') setNeedsOnly(true); }, [searchParams]);
   const [offset, setOffset] = useState(0);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,6 +38,7 @@ export default function CustomerBrowser({ onSelect }) {
         const params = { sort: 'name', created_by: user.id };
         if (q.trim()) params.q = q.trim();
         if (popOnly) params.pop = 'true';
+        if (needsOnly) params.validation = 'invalid';
         
         const r = await api.get('/customers', { params });
         if (!cancelled) {
@@ -43,7 +51,13 @@ export default function CustomerBrowser({ onSelect }) {
       }
     }, q ? 400 : 0);
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [q, popOnly, user.id]);
+  }, [q, popOnly, needsOnly, user.id]);
+
+  // After a correction is sent: show "waiting for the admin" on that row and refresh the notification
+  const handleCorrectionSent = (id) => {
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, pending_corrections: (r.pending_corrections || 0) + 1 } : r)));
+    notifyCorrectionsChanged();
+  };
 
   const visible = rows.filter((r) => looksLikePhone(r.phone_number));
   const paginatedRows = visible.slice(offset, offset + PAGE_SIZE);
@@ -59,6 +73,12 @@ export default function CustomerBrowser({ onSelect }) {
           <span className="text-[10px] font-black uppercase tracking-wider bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">Read only</span>
         </h2>
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+          <label className="flex items-center gap-2 text-sm font-bold text-amber-700 cursor-pointer select-none">
+            <input type="checkbox" checked={needsOnly}
+              onChange={(e) => { setNeedsOnly(e.target.checked); setOffset(0); }}
+              className="h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500" />
+            <AlertTriangle size={14} /> Needs correction only
+          </label>
           <div className="relative">
             <Search size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input type="text" value={q} placeholder="Name or phone…"
@@ -87,33 +107,50 @@ export default function CustomerBrowser({ onSelect }) {
           </thead>
           <tbody className="divide-y divide-gray-50">
             {loading ? (
-              <tr><td colSpan={8} className="py-10 text-center"><RefreshCw size={22} className="inline animate-spin text-red-600" /></td></tr>
+              <tr><td colSpan={9} className="py-10 text-center"><RefreshCw size={22} className="inline animate-spin text-red-600" /></td></tr>
             ) : paginatedRows.length === 0 ? (
-              <tr><td colSpan={8} className="py-10 text-center text-sm italic font-medium text-gray-500">{t('crm.no_records')}</td></tr>
+              <tr><td colSpan={9} className="py-10 text-center text-sm italic font-medium text-gray-500">{t('crm.no_records')}</td></tr>
             ) : (
-              paginatedRows.map((c, index) => (
-                <tr key={c.id} onClick={() => onSelect?.(c.phone_number)}
-                  className="cursor-pointer hover:bg-gray-50/70 transition-colors">
-                  <td className="py-3 px-4 text-center text-xs font-black text-gray-400">
-                    {offset + index + 1}
-                  </td>
-                  <td className="py-3 px-4 font-bold text-gray-900">
-                    {c.first_name} {c.last_name}
-                    {c.is_pop && (
-                      <span className="ms-2 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase text-amber-700">
-                        <Bell size={10} /> POP
-                      </span>
+              paginatedRows.map((c, index) => {
+                const needsCorrection = c.validation_status === 'invalid';
+                return (
+                  <Fragment key={c.id}>
+                    <tr onClick={() => onSelect?.(c.phone_number)}
+                      className={`cursor-pointer transition-colors ${needsCorrection ? 'bg-amber-50/60 hover:bg-amber-50' : 'hover:bg-gray-50/70'}`}>
+                      <td className="py-3 px-4 text-center text-xs font-black text-gray-400">
+                        {offset + index + 1}
+                      </td>
+                      <td className="py-3 px-4 font-bold text-gray-900">
+                        {c.first_name} {c.last_name}
+                        {c.is_pop && (
+                          <span className="ms-2 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase text-amber-700">
+                            <Bell size={10} /> POP
+                          </span>
+                        )}
+                        {needsCorrection && (
+                          <span className="ms-2 inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-black uppercase text-red-700">
+                            <AlertTriangle size={10} /> Needs correction
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 font-mono text-gray-600">{c.phone_number}</td>
+                      <td className="py-3 px-4 font-mono text-gray-600">{c.cust_code}</td>
+                      <td className="py-3 px-4 text-xs font-bold text-gray-600">{c.tier || '—'}</td>
+                      <td className="py-3 px-4 text-end font-black text-indigo-700">{Math.floor(c.available_points || 0)}</td>
+                      <td className="py-3 px-4 text-end font-bold text-gray-900">{c.sim_count || 0}</td>
+                      <td className="py-3 px-4 text-end font-black text-gray-900 whitespace-nowrap">{formatDZD(c.total_spent)}</td>
+                      <td className="py-3 px-4 text-end text-gray-400"><Eye size={16} /></td>
+                    </tr>
+                    {needsCorrection && (
+                      <tr className="bg-amber-50/60">
+                        <td colSpan={9} className="px-4 pb-4 pt-0">
+                          <CustomerCorrectionForm customer={c} onSent={() => handleCorrectionSent(c.id)} />
+                        </td>
+                      </tr>
                     )}
-                  </td>
-                  <td className="py-3 px-4 font-mono text-gray-600">{c.phone_number}</td>
-                  <td className="py-3 px-4 font-mono text-gray-600">{c.cust_code}</td>
-                  <td className="py-3 px-4 text-xs font-bold text-gray-600">{c.tier || '—'}</td>
-                  <td className="py-3 px-4 text-end font-black text-indigo-700">{Math.floor(c.available_points || 0)}</td>
-                  <td className="py-3 px-4 text-end font-bold text-gray-900">{c.sim_count || 0}</td>
-                  <td className="py-3 px-4 text-end font-black text-gray-900 whitespace-nowrap">{formatDZD(c.total_spent)}</td>
-                  <td className="py-3 px-4 text-end text-gray-400"><Eye size={16} /></td>
-                </tr>
-              ))
+                  </Fragment>
+                );
+              })
             )}
           </tbody>
         </table>

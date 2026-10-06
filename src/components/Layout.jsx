@@ -6,9 +6,12 @@ import { useLanguage } from '../context/LanguageContext';
 import {
   LogOut, UserCircle, LayoutDashboard, Users, UsersRound, Tags,
   Package, MonitorDot, Wallet, FileText, HandCoins, Receipt, 
-  BarChart3, TrendingUp, History, Activity, Menu, X, Layers, Globe, ShieldAlert, CheckCircle2, Barcode, Landmark
+  BarChart3, TrendingUp, History, Activity, Menu, X, Layers, 
+  Globe, ShieldAlert, CheckCircle2, Barcode, Landmark, UserCheck
 } from 'lucide-react';
 import OfflineBanner from './OfflineBanner';
+import CorrectionBanner from './CorrectionBanner';
+import { useCorrectionAlerts } from '../hooks/useCorrectionAlerts';
 
 const formatDZD = (n) => new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 0 }).format(n || 0);
 
@@ -21,6 +24,7 @@ export default function Layout() {
 
   // NEW: Admin Polling State for Discount Approvals
   const [pendingDiscounts, setPendingDiscounts] = useState([]);
+  const correction = useCorrectionAlerts(isAdmin || isCashier);
 
   // NEW: Poll every 4 seconds if the user is an Admin
   useEffect(() => {
@@ -179,6 +183,12 @@ export default function Layout() {
                 <NavLink to="/admin/barcode-settings" className={navLinkClass} onClick={closeSidebar}><Barcode size={18} /> pos.barcode_printing</NavLink>
                 <NavLink to="/admin/users" className={navLinkClass} onClick={closeSidebar}><Users size={18} /> {t('layout.manage_users')}</NavLink>
                 <NavLink to="/admin/customers" className={navLinkClass} onClick={closeSidebar}><UsersRound size={18} /> {t('layout.customers')}</NavLink>
+                <NavLink to="/admin/customer-validation" className={navLinkClass} onClick={closeSidebar}>
+                  <UserCheck size={18} /> Customer Validation
+                  {correction.pendingCorrections > 0 && (
+                    <span className="ms-auto rounded-full bg-amber-500 px-2 py-0.5 text-xs font-black text-white">{correction.pendingCorrections}</span>
+                  )}
+                </NavLink>
                 <NavLink to="/admin/finances" className={navLinkClass} onClick={closeSidebar}><Wallet size={18} /> {t('layout.finances')}</NavLink>
                 <NavLink to="/admin/register-ledger" className={navLinkClass} onClick={closeSidebar}><Landmark size={18} /> Register Ledger</NavLink>
                 <NavLink to="/admin/advances" className={navLinkClass} onClick={closeSidebar}><HandCoins size={18} /> {t('layout.advances')}</NavLink>
@@ -200,6 +210,9 @@ export default function Layout() {
                 <NavLink to="/pos" className={navLinkClass} onClick={closeSidebar}><MonitorDot size={18} /> {t('layout.pos_terminal')}</NavLink>
                 <NavLink to="/cashier/customers" className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-colors mx-3 ${isActive ? 'bg-red-600 text-white' : 'text-gray-600 hover:bg-red-50 hover:text-red-600'}`}>
                   <UsersRound size={20} /><span>{t('layout.crm_loyalty')}</span>
+                  {correction.needsCorrection > 0 && (
+                    <span className="ms-auto rounded-full bg-amber-500 px-2 py-0.5 text-xs font-black text-white">{correction.needsCorrection}</span>
+                  )}
                 </NavLink>
                 <div className="px-6 py-2 mt-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('layout.my_performance')}</div>
                 <NavLink to="/cashier/reports/range" className={navLinkClass} onClick={closeSidebar}><BarChart3 size={18} /> {t('layout.my_reports')}</NavLink>
@@ -209,7 +222,10 @@ export default function Layout() {
         </aside>
 
         <main className="flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6 lg:p-8 text-start">
-          <div className="max-w-7xl mx-auto w-full"><Outlet /></div>
+          <div className="max-w-7xl mx-auto w-full">
+            {isCashier && <CorrectionBanner count={correction.needsCorrection} />}
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

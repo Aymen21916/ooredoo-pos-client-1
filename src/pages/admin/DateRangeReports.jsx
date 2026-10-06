@@ -34,7 +34,13 @@ export default function DateRangeReports() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('totals');
-
+  const [ledgerRange, setLedgerRange] = useState(() => {
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const today = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    return { from: `${today.slice(0, 7)}-01`, to: today };
+  });
+  
   const span = daysBetween(from, to);
 
   const clientHint = useMemo(() => {
@@ -86,11 +92,15 @@ export default function DateRangeReports() {
           <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 flex items-center gap-1.5"><Calendar size={14} /> {t('range.date_from ')}</label>
-              <input type="date" value={from} max={today} onChange={(e) => setFrom(e.target.value)} className="block w-full rounded-xl border-0 py-2.5 px-4 text-gray-900 ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 transition-all" />
+              <input type="date" value={from} max={today} 
+              onChange={(e) => setFrom(e.target.value)} 
+              className="block w-full rounded-xl border-0 py-2.5 px-4 text-gray-900 ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 transition-all" />
             </div>
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 flex items-center gap-1.5"><Calendar size={14} /> {t('range.date_to')}</label>
-              <input type="date" value={to} max={today} min={from || undefined} onChange={(e) => setTo(e.target.value)} className="block w-full rounded-xl border-0 py-2.5 px-4 text-gray-900 ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 transition-all" />
+              <input type="date" value={to} max={today} min={from || undefined} 
+              onChange={(e) => setTo(e.target.value)} 
+              className="block w-full rounded-xl border-0 py-2.5 px-4 text-gray-900 ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 transition-all" />
             </div>
           </div>
           <button onClick={submit} disabled={loading || !!clientHint || !from || !to} className="w-full md:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
