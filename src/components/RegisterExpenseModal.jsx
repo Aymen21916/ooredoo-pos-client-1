@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import api from '../api/axios';
 import { useLanguage } from '../context/LanguageContext';
-import { X, Receipt, CheckCircle2, AlertTriangle, AlertCircle, Building2, Tag, Calendar, RefreshCw } from 'lucide-react';
+import { X, Receipt, CheckCircle2, AlertTriangle, AlertCircle, Building2, Tag, Calendar, RefreshCw, Wallet } from 'lucide-react';
 
 const formatDZD = (n) =>
   new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 2 }).format(n || 0);
@@ -31,23 +31,38 @@ export default function RegisterExpenseModal({ mode = 'cashier', sessionId, stor
   const [error, setError]                                 = useState('');
   const [insufficientBalance, setInsufficientBalance]     = useState(null);
 
+  // Cashier: live cash of the register (today's sales + what is already in the store register)
+  const [cash, setCash] = useState(null);
+
   const CATEGORY_OPTIONS = [
     { value: 'utility',   label: t('expense.cat_utility') },
     { value: 'inventory', label: t('expense.cat_inventory') },
     { value: 'other',     label: t('expense.cat_other') },
   ];
 
+  // Admin: stores with the balance of their REGISTER LEDGER
   useEffect(() => {
     if (mode !== 'admin') return;
     let cancelled = false;
-    api.get('/finances/registers').then((r) => {
+    api.get('/register-ledger/filters').then((r) => {
         if (cancelled) return;
-        const list = r.data.data || [];
+        const list = (r.data.data?.stores || []).map((st) => ({
+          id: st.id, name: st.name, location: '', current_cash: Number(st.balance) || 0,
+        }));
         setStores(list);
         if (!storeId && list.length > 0) setSelectedStore(String(list[0].id));
       }).catch(() => { if (!cancelled) setStores([]); }).finally(() => { if (!cancelled) setStoresLoading(false); });
     return () => { cancelled = true; };
   }, [mode, storeId]);
+
+  // Cashier: how much cash is in the register right now
+  const loadCash = () => {
+    if (mode !== 'cashier') return Promise.resolve();
+    return api.get('/finances/expenses/register-cash')
+      .then((r) => setCash(r.data.data || null))
+      .catch(() => setCash(null));
+  };
+  useEffect(() => { loadCash(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [mode]);
 
   const validationError = useMemo(() => {
     const trimmedDesc = description.trim();
@@ -85,6 +100,7 @@ export default function RegisterExpenseModal({ mode = 'cashier', sessionId, stor
       const code = data.code;
       if (code === 'INSUFFICIENT_REGISTER_CASH') {
         setInsufficientBalance(typeof data.current_balance === 'number' ? data.current_balance : Number(data.current_balance) || 0);
+        loadCash();
       } else {
         setError(data.message || t('common.action_failed'));
       }
@@ -111,6 +127,20 @@ export default function RegisterExpenseModal({ mode = 'cashier', sessionId, stor
           </div>
         )}
 
+        {mode === 'cashier' && cash && (
+          <div className="mx-4 mt-3 rounded-md bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-900">
+            <div className="flex items-center gap-2 font-semibold"><Wallet size={16} /> {t('expense.register_today')}</div>
+            <div className="mt-1 text-2xl font-mono font-bold">{formatDZD(cash.session_net)}</div>
+            <div className="mt-1 text-xs text-emerald-800 space-y-0.5">
+              <div className="flex justify-between"><span>{t('expense.sales_today')}</span><span className="font-mono">{formatDZD(cash.session_sales)}</span></div>
+              {cash.session_debts > 0 && <div className="flex justify-between"><span>− {t('expense.debts_today')}</span><span className="font-mono">{formatDZD(cash.session_debts)}</span></div>}
+              {cash.session_expenses > 0 && <div className="flex justify-between"><span>− {t('expense.expenses_today')}</span><span className="font-mono">{formatDZD(cash.session_expenses)}</span></div>}
+              <div className="flex justify-between"><span>{t('expense.previous_balance')}</span><span className="font-mono">{formatDZD(cash.store_balance)}</span></div>
+              <div className="flex justify-between font-semibold border-t border-emerald-200 pt-0.5 mt-0.5"><span>{t('expense.available')}</span><span className="font-mono">{formatDZD(cash.available)}</span></div>
+            </div>
+          </div>
+        )}
+
         {error && <div className="mx-4 mt-3 rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700 flex items-start gap-2"><AlertCircle size={16} className="mt-0.5 flex-shrink-0" /><span>{error}</span></div>}
 
         <div className="p-6 overflow-y-auto flex-1 space-y-4">
@@ -123,7 +153,7 @@ export default function RegisterExpenseModal({ mode = 'cashier', sessionId, stor
                 <select value={selectedStore} onChange={(e) => setSelectedStore(e.target.value)} className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:ring-red-500" required>
                   <option value="" disabled>{t('expense.select_store')}</option>
                   {stores.map((s) => (
-                    <option key={s.id} value={s.id}>{s.name}{s.location ? ` — ${s.location}` : ''} {typeof s.current_cash === 'number' ? ` (cash: ${formatDZD(s.current_cash)})` : ''}</option>
+                    <option key={s.id} value={s.id}>{s.name}{s.location ? ` — ${s.location}` : ''} {typeof s.current_cash === 'number' ? ` (${formatDZD(s.current_cash)})` : ''}</option>
                   ))}
                 </select>
               )}
@@ -139,7 +169,7 @@ export default function RegisterExpenseModal({ mode = 'cashier', sessionId, stor
           )}
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">{t('expense.amount_dzd ')}</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">{t('expense.amount_dzd')}</label>
             <input type="number" inputMode="decimal" step="0.01" min={AMOUNT_MIN} max={AMOUNT_MAX} value={amount} onChange={(e) => { setAmount(e.target.value); setInsufficientBalance(null); }} placeholder="0.00" className="block w-full rounded-md border border-gray-300 px-3 py-2 text-base font-mono focus:border-red-500 focus:ring-red-500" required />
           </div>
 

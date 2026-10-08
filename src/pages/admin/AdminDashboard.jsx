@@ -46,6 +46,8 @@ export default function AdminDashboard() {
     );
   }
 
+  console.log('Live sessions:', sessions);
+
   return (
     <div className="space-y-6 text-start">
       <div className="flex items-center justify-between">
@@ -115,6 +117,14 @@ export default function AdminDashboard() {
                     <div>
                       <p className="text-xs text-gray-500 flex items-center gap-1 text-red-600">{t('admin.debts')}</p>
                       <p className="font-semibold text-gray-900">{formatDZD(session.debt_total)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 flex items-center gap-1 text-indigo-600">{t('expense.card_today')}</p>
+                      <p className="font-semibold text-gray-900">{formatDZD(session.card_total)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 flex items-center gap-1 text-amber-600">{t('expense.expenses_today')}</p>
+                      <p className="font-semibold text-gray-900">{formatDZD(session.expense_total)}</p>
                     </div>
                   </div>
                 </div>

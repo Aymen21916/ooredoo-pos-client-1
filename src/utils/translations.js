@@ -28,10 +28,12 @@ export const translations = {
     "login.password": "Password",
     "login.signing_in": "Signing in...",
     "login.sign_in": "Sign in",
+
     "common.cancel": "Cancel",
     "common.refresh": "Refresh",
     "common.dismiss": "Dismiss",
     "common.action_failed": "Action Failed",
+    
     "pos.ready_to_start": "Ready to start your shift?",
     "pos.open_register": "Open Register & Start Shift",
     "pos.end_shift_reconciliation": "End of Shift Reconciliation",
@@ -58,6 +60,7 @@ export const translations = {
     "pos.opening_cash": "Your Session Opening Cash:",
     "pos.earned_commission": "Your Earned Commission:",
     "pos.enter_physical_cash_alert": "Please enter the physical cash amount.",
+    
     "ledger.title": "Today's Full Transaction Ledger",
     "ledger.no_transactions": "No transactions recorded yet today.",
     "ledger.sim_cards": "SIM Cards",
@@ -76,6 +79,7 @@ export const translations = {
     "ledger.void_reason_placeholder": "e.g., Wrong item selected",
     "ledger.confirm_void": "Confirm Void",
     "ledger.provide_void_reason": "Please provide a reason for voiding this transaction.",
+    
     "modal.step": "Step",
     "modal.of": "of",
     "modal.confirm_charge": "Confirm & Charge",
@@ -117,6 +121,7 @@ export const translations = {
     "modal.choose_category": "Choose a category",
     "modal.offers": "offers",
     "modal.pick_offer": "Pick the offer for this sale.",
+    
     "advances.title": "My Advances",
     "advances.outstanding": "Outstanding Balance",
     "advances.record_btn": "Record advance",
@@ -133,6 +138,7 @@ export const translations = {
     "advances.reason_placeholder": "Explain why this advance is being cancelled...",
     "advances.required": "Required",
     "advances.voiding": "Voiding...",
+    
     "debt.title": "Record Client Debt",
     "debt.requires_customer": "Every debt must be linked to a customer so the admin can follow up later.",
     "debt.debt_details": "Debt details",
@@ -145,6 +151,7 @@ export const translations = {
     "debt.customer": "Customer",
     "debt.confirm_btn": "Confirm debt",
     "debt.recording_btn": "Recording debt...",
+    
     "receipt.success": "Transaction Successful",
     "receipt.close": "Close",
     "receipt.print": "Print Receipt",
@@ -162,6 +169,7 @@ export const translations = {
     "receipt.new_balance": "New Balance:",
     "receipt.thank_you": "THANK YOU FOR YOUR VISIT!",
     "receipt.merci": "Thank you for your loyalty.",
+    
     "expense.title": "Record register expense",
     "expense.not_enough_cash": "Not enough cash in the register.",
     "expense.current_balance": "Current balance:",
@@ -179,6 +187,7 @@ export const translations = {
     "expense.desc_placeholder": "What was this expense for?",
     "expense.cashier_hint": "Store and date are filled in automatically from your open session.",
     "expense.record_btn": "Record expense",
+    
     "ussd.start_flow": "Start USSD Flow",
     "ussd.processing": "Processing Command...",
     "ussd.submit_response": "Submit Response",
@@ -193,6 +202,7 @@ export const translations = {
     "ussd.creating": "Creating...",
     "ussd.transaction_complete": "Transaction Complete.",
     "ussd.start_new_session": "Start New Session",
+    
     "reports.error_invalid_range": "The 'to' date must be on or after the 'from' date.",
     "reports.error_range_too_large": "The selected range is too large (maximum 366 days).",
     "reports.error_future_date": "Dates cannot be in the future.",
@@ -238,6 +248,7 @@ export const translations = {
     "reports.profession": "Profession",
     "reports.description": "Description",
     "reports.amount": "Amount",
+    
     "crm.customer_lookup": "Customer Lookup",
     "crm.search_database": "Search Customer Database",
     "crm.search_placeholder": "Enter phone number (e.g. 0555...)",
@@ -278,6 +289,7 @@ export const translations = {
     "crm.category": "Category",
     "crm.amount_paid": "Amount Paid",
     "crm.system": "System",
+    
     "admin.live_overview": "Live Store Overview",
     "admin.refresh_now": "Refresh Now",
     "admin.no_active_sessions": "No Active Sessions",
@@ -526,17 +538,17 @@ export const translations = {
     "manage.stock": "Stock Qty",
     "manage.upload_excel": "Upload Excel",
     "manage.uploading": "Uploading...",
-
     "manage.search_product": "Search by name or barcode...",
-
     "manage.edit_user": "Edit User",
     "manage.new_password_hint": "Leave blank to keep current password",
     "manage.export_excel": "Export",
     "manage.import_excel": "Import",
+    
     "modal.request_discount_permission": "Request Admin Discount",
     "modal.waiting_for_admin": "Waiting for Admin approval...",
     "modal.discount_denied": "Permission Denied by Admin",
     "modal.discount_approved": "Discount Approved!",
+    
     "layout.discount_request": "Discount Request",
     "layout.requesting_manual_discount": "is requesting permission for a manual discount on",
     "layout.original_price": "Original Price",
@@ -547,14 +559,15 @@ export const translations = {
     "layout.register_ledger": "Register Ledger",
     "layout.role_admin": "Admin",
     "layout.role_cashier": "Cashier",
+    
     "pos.barcode_printing": "Barcode Printing",
+    
     "offline.banner": "You are offline. Transactions cannot be saved until the connection is restored.",
 
     "pos.opening_session": "Opening...",
     "pos.closing_session": "Closing...",
     "pos.open_session_failed": "Failed to open session",
     "pos.close_session_failed": "Failed to close session",
-
     "pop.reminders": "POP Reminders",
     "pop.renewals": "POP Renewals",
     "pop.last_purchase": "Last Purchase",
@@ -616,8 +629,29 @@ export const translations = {
     "validation.pop_cycle_required": "Please choose a POP cycle.",
     "validation.lookup_failed": "Lookup failed.",
     "validation.customer_exists": "A customer with that phone already exists. Please confirm.",
-    "validation.customer_save_failed": "Failed to save customer."
-},
+    "validation.customer_save_failed": "Failed to save customer.",
+
+    "expense.amount_dzd": "Amount (DZD)",
+    "expense.register_today": "Cash in the register today",
+    "expense.sales_today": "Today's sales (SIM + Storm + Products)",
+    "expense.debts_today": "Debts today",
+    "expense.expenses_today": "Expenses today",
+    "expense.previous_balance": "Already in the store register",
+    "expense.available": "Available for expenses",
+
+    "pos.record_card": "Card payment (no cash)",
+    "expense.card_today": "Paid by card today",
+    "cardpay.title": "Card payment (no cash)",
+    "cardpay.hint": "Use this when a customer paid by credit card: the sale stays recorded, but the amount is taken out of the cash that should be in the register.",
+    "cardpay.amount": "Amount paid by card (DZD)",
+    "cardpay.note": "Note (optional)",
+    "cardpay.note_placeholder": "e.g. TPE receipt number / customer name",
+    "cardpay.today_total": "Card payments this session",
+    "cardpay.record": "Record card payment",
+    "cardpay.recording": "Recording…",
+    "cardpay.amount_invalid": "Enter a valid amount (up to 2 decimals).",
+    "cardpay.void_reason_prompt": "Why are you voiding this card payment?",
+  },
   fr: {
     "layout.logout": "Déconnexion",
     "layout.admin": "Administration",
@@ -1235,8 +1269,29 @@ export const translations = {
     "validation.pop_cycle_required": "Veuillez choisir un cycle POP.",
     "validation.lookup_failed": "Échec de la recherche.",
     "validation.customer_exists": "Un client avec ce numéro existe déjà. Veuillez confirmer.",
-    "validation.customer_save_failed": "Échec de l'enregistrement du client."
-},
+    "validation.customer_save_failed": "Échec de l'enregistrement du client.",
+
+    "expense.amount_dzd": "Montant (DZD)",
+    "expense.register_today": "Espèces en caisse aujourd'hui",
+    "expense.sales_today": "Ventes du jour (SIM + Storm + Produits)",
+    "expense.debts_today": "Dettes du jour",
+    "expense.expenses_today": "Dépenses du jour",
+    "expense.previous_balance": "Déjà en caisse de la boutique",
+    "expense.available": "Disponible pour les dépenses",
+
+    "pos.record_card": "Paiement par carte (sans espèces)",
+    "expense.card_today": "Payé par carte aujourd'hui",
+    "cardpay.title": "Paiement par carte (sans espèces)",
+    "cardpay.hint": "À utiliser lorsqu'un client paie par carte bancaire : la vente reste enregistrée, mais le montant est retiré des espèces qui doivent se trouver en caisse.",
+    "cardpay.amount": "Montant payé par carte (DZD)",
+    "cardpay.note": "Note (facultatif)",
+    "cardpay.note_placeholder": "ex. numéro du ticket TPE / nom du client",
+    "cardpay.today_total": "Paiements par carte de cette session",
+    "cardpay.record": "Enregistrer le paiement par carte",
+    "cardpay.recording": "Enregistrement…",
+    "cardpay.amount_invalid": "Saisissez un montant valide (2 décimales maximum).",
+    "cardpay.void_reason_prompt": "Pourquoi annulez-vous ce paiement par carte ?",
+  },
   ar: {
     "layout.logout": "تسجيل الخروج",
     "layout.admin": "الإدارة",
@@ -1854,6 +1909,27 @@ export const translations = {
     "validation.pop_cycle_required": "يرجى اختيار دورة POP.",
     "validation.lookup_failed": "فشل البحث.",
     "validation.customer_exists": "يوجد زبون بهذا الرقم مسبقاً. يرجى التأكيد.",
-    "validation.customer_save_failed": "فشل حفظ الزبون."
-}
+    "validation.customer_save_failed": "فشل حفظ الزبون.",
+
+    "expense.amount_dzd": "المبلغ (دج)",
+    "expense.register_today": "النقد في الصندوق اليوم",
+    "expense.sales_today": "مبيعات اليوم (SIM + Storm + المنتجات)",
+    "expense.debts_today": "ديون اليوم",
+    "expense.expenses_today": "مصروفات اليوم",
+    "expense.previous_balance": "المتوفر سابقًا في صندوق المحل",
+    "expense.available": "المتاح للمصروفات",
+
+    "pos.record_card": "دفع بالبطاقة (بدون نقد)",
+    "expense.card_today": "المدفوع بالبطاقة اليوم",
+    "cardpay.title": "دفع بالبطاقة (بدون نقد)",
+    "cardpay.hint": "استخدم هذا الخيار عندما يدفع الزبون ببطاقة بنكية: تبقى عملية البيع مسجلة، لكن المبلغ يُخصم من النقد الذي يجب أن يكون في الصندوق.",
+    "cardpay.amount": "المبلغ المدفوع بالبطاقة (دج)",
+    "cardpay.note": "ملاحظة (اختياري)",
+    "cardpay.note_placeholder": "مثال: رقم وصل TPE / اسم الزبون",
+    "cardpay.today_total": "المدفوعات بالبطاقة في هذه الجلسة",
+    "cardpay.record": "تسجيل الدفع بالبطاقة",
+    "cardpay.recording": "جاري التسجيل…",
+    "cardpay.amount_invalid": "أدخل مبلغًا صالحًا (بحد أقصى منزلتين عشريتين).",
+    "cardpay.void_reason_prompt": "لماذا تلغي هذا الدفع بالبطاقة؟",
+  }
 };

@@ -14,7 +14,8 @@ import DebtModal from '../../components/DebtModal';
 import RegisterExpenseModal from '../../components/RegisterExpenseModal';
 import CashierAdvancePanel from '../../components/CashierAdvancePanel';
 import UssdTerminalModal from '../..//components/UssdTerminalModal';
-import ReceiptModal from '../../components/ReceiptModal'; 
+import ReceiptModal from '../../components/ReceiptModal';
+import CardPaymentModal from '../../components/CardPaymentModal';
 
 export default function POSDashboard() {
   const { user } = useAuth();
@@ -23,6 +24,7 @@ export default function POSDashboard() {
 
   const [session, setSession] = useState(null);
   const [totals, setTotals] = useState(null);
+  const [cardTotal, setCardTotal] = useState(0);
   const [catalog, setCatalog] = useState({ offers: [], categories: [], products: [] });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -87,11 +89,15 @@ export default function POSDashboard() {
   };
 
   const fetchSessionDetails = async (sessionId) => {
-    try {
-      const totalsRes = await api.get(`/sessions/${sessionId}/totals`);
-      setTotals(totalsRes.data.data);
-    } catch (err) { console.error('Failed to fetch details', err); }
-  };
+  try {
+    const totalsRes = await api.get(`/sessions/${sessionId}/totals`);
+    setTotals(totalsRes.data.data);
+  } catch (err) { console.error('Failed to fetch details', err); }
+  try {
+    const cardRes = await api.get('/card-payments/me');
+    setCardTotal(cardRes.data.data?.total || 0);
+  } catch (err) { setCardTotal(0); }
+};
 
   const handleOpenSession = async () => {
     try {
@@ -161,7 +167,7 @@ export default function POSDashboard() {
   }
 
   const noOpenSession = !session;
-  const expectedCash = totals?.expected_register_cash || 0;
+  const expectedCash = Math.max(0, (totals?.expected_register_cash || 0));
   const countedCash = parseFloat(manualCashCount) || 0;
   const discrepancy = countedCash - expectedCash;
 
@@ -172,6 +178,7 @@ export default function POSDashboard() {
       {activeModal === 'accessory' && <AccessorySaleModal sessionId={session.id} catalog={catalog} onClose={closeModal} onComplete={handleModalComplete} />}
       {activeModal === 'storm' && <StormSaleModal sessionId={session.id} onClose={closeModal} onComplete={handleModalComplete} />}
       {activeModal === 'debt' && <DebtModal sessionId={session.id} onClose={closeModal} onComplete={handleModalComplete} />}
+      {activeModal === 'card' && <CardPaymentModal onClose={closeModal} onComplete={handleModalComplete} onChanged={() => fetchSessionDetails(session.id)} />}
       {activeModal === 'expense' && <RegisterExpenseModal mode="cashier" sessionId={session.id} onClose={closeModal} onComplete={handleModalComplete} />}
       {activeModal === 'ussd' && <UssdTerminalModal serviceCode={ussdServiceCode} posSessionId={session.id} onClose={closeModal} onTransactionSuccess={handleModalComplete} />}
 
@@ -262,7 +269,7 @@ export default function POSDashboard() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <button onClick={() => openModal('sim')} className="flex flex-col items-center justify-center p-8 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl border border-red-200 transition-colors">
                 <Smartphone size={32} className="mb-3" />
                 <span className="font-bold text-lg">{t('pos.sell_sim')}</span>
@@ -291,7 +298,11 @@ export default function POSDashboard() {
                 <AlertTriangle size={32} className="mb-3" />
                 <span className="font-bold text-lg">{t('pos.record_debt')}</span>
               </button>
-              <button onClick={() => openModal('expense')} disabled={noOpenSession} className="flex flex-col items-center justify-center p-8 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl border border-amber-200 transition-colors sm:col-span-2 disabled:opacity-50 disabled:cursor-not-allowed">
+              <button onClick={() => openModal('card')} disabled={noOpenSession} className="flex flex-col items-center justify-center p-8 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl border border-indigo-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <CreditCard size={32} className="mb-3" />
+                <span className="font-bold text-lg">{t('pos.record_card')}</span>
+              </button>
+              <button onClick={() => openModal('expense')} disabled={noOpenSession} className="flex flex-col items-center justify-center p-8 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl border border-amber-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <Receipt size={32} className="mb-3" />
                 <span className="font-bold text-lg">{t('pos.record_expense')}</span>
               </button>
