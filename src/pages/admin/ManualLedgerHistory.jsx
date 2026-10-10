@@ -1,21 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import api from '../../api/axios';
-import { History, RefreshCw, Coins, Gift, AlertCircle, CalendarRange, FileEdit } from 'lucide-react';
-
-const pad = (n) => String(n).padStart(2, '0');
-const fmt = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-
-const presets = () => {
-  const now = new Date();
-  const today = fmt(now);
-  const d30 = new Date(now);
-  d30.setDate(d30.getDate() - 29);
-  return [
-    ['Today', today, today],
-    ['This month', fmt(new Date(now.getFullYear(), now.getMonth(), 1)), today],
-    ['Last 30 days', fmt(d30), today],
-  ];
-};
+import DateRangePicker from '../../components/DateRangePicker';
+import { History, RefreshCw, Coins, Gift, AlertCircle, FileEdit } from 'lucide-react';
 
 const formatDZD = (n) =>
   new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 2 }).format(n || 0);
@@ -56,8 +42,6 @@ export default function ManualLedgerHistory({ range, onRangeChange }) {
     [data, type]
   );
 
-  const today = fmt(new Date());
-
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden mt-8">
       <div className="bg-gray-900 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
@@ -68,42 +52,8 @@ export default function ManualLedgerHistory({ range, onRangeChange }) {
       </div>
 
       <div className="p-6 space-y-5">
-        {/* Date range picker */}
-        <div className="flex flex-wrap items-end gap-4">
-          <div>
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">From</label>
-            <input
-              type="date" value={range.from} max={today}
-              onChange={(e) => onRangeChange({ ...range, from: e.target.value })}
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:ring-red-500"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">To</label>
-            <input
-              type="date" value={range.to} max={today}
-              onChange={(e) => onRangeChange({ ...range, to: e.target.value })}
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:ring-red-500"
-            />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {presets().map(([label, from, to]) => (
-              <button
-                key={label}
-                onClick={() => onRangeChange({ from, to })}
-                className="inline-flex items-center gap-1 rounded-md bg-gray-100 px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-200"
-              >
-                <CalendarRange size={14} /> {label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <DateRangePicker range={range} onRangeChange={onRangeChange} />
 
-        {invalidRange && (
-          <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 flex items-center gap-2">
-            <AlertCircle size={16} /> “From” must be on or before “To”.
-          </div>
-        )}
         {error && (
           <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 flex items-center gap-2">
             <AlertCircle size={16} /> {error}

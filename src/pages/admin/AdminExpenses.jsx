@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Receipt, Building2, Tag, Calendar, Filter, Plus, EyeOff,
+  Receipt, Building2, Tag, Filter, Plus, EyeOff,
   RefreshCw, X, AlertCircle, CheckCircle2, ChevronLeft, ChevronRight,
   Trash2,
 } from 'lucide-react';
 import api from '../../api/axios';
+import DateRangePicker from '../../components/DateRangePicker';
 import RegisterExpenseModal from '../../components/RegisterExpenseModal.jsx';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -26,11 +27,6 @@ const formatDateTime = (s) =>
         hour: '2-digit', minute: '2-digit',
       })
     : '—';
-
-const todayStr = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-};
 
 const CATEGORY_OPTIONS = [
   { value: '',          label: 'All categories' },
@@ -88,6 +84,7 @@ export default function AdminExpenses() {
 
   // ─── Fetch expenses whenever filters or pagination changes ────────────────
   const fetchExpenses = useCallback(async () => {
+    if (filters.from && filters.to && filters.from > filters.to) return;
     setLoading(true);
     setError('');
     try {
@@ -213,7 +210,7 @@ export default function AdminExpenses() {
           <Filter size={16} /> Filters
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {/* Store */}
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1 flex items-center gap-1">
@@ -247,35 +244,6 @@ export default function AdminExpenses() {
             </select>
           </div>
 
-          {/* From date */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1 flex items-center gap-1">
-              <Calendar size={12} /> From
-            </label>
-            <input
-              type="date"
-              value={filters.from}
-              max={filters.to || todayStr()}
-              onChange={(e) => updateFilter({ from: e.target.value })}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:ring-red-500"
-            />
-          </div>
-
-          {/* To date */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1 flex items-center gap-1">
-              <Calendar size={12} /> To
-            </label>
-            <input
-              type="date"
-              value={filters.to}
-              min={filters.from || undefined}
-              max={todayStr()}
-              onChange={(e) => updateFilter({ to: e.target.value })}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:ring-red-500"
-            />
-          </div>
-
           {/* Void state */}
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1 flex items-center gap-1">
@@ -291,6 +259,14 @@ export default function AdminExpenses() {
               ))}
             </select>
           </div>
+        </div>
+
+        <div className="mt-4">
+          <DateRangePicker
+            allowEmpty
+            range={{ from: filters.from, to: filters.to }}
+            onRangeChange={(r) => updateFilter(r)}
+          />
         </div>
 
         <div className="flex justify-end mt-3">

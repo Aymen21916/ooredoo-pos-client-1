@@ -179,6 +179,36 @@ export default function CashierAdvancePanel({ sessionId = null, refreshKey = 0, 
               <div className="flex justify-between"><span>My Ooredoo app ({payroll.app_installs})</span><span className="font-medium text-gray-900">{formatDZD(payroll.app_commission)}</span></div>
             )}
           </div>
+
+          {/* What the admin already paid out of the register this month */}
+          <div className="mt-3 pt-3 border-t border-gray-200 space-y-1 text-sm">
+            <div className="flex justify-between"><span className="text-gray-600">Paid to me</span><span className="font-bold text-green-700">{formatDZD(payroll.amount_paid)}</span></div>
+            {Number(payroll.advance_deducted) > 0 && (
+              <div className="flex justify-between"><span className="text-gray-600">Advance deducted</span><span className="font-medium text-orange-700">{formatDZD(payroll.advance_deducted)}</span></div>
+            )}
+            <div className="flex justify-between"><span className="text-gray-600">Still to receive</span><span className="font-bold text-gray-900">{formatDZD(payroll.remaining_salary)}</span></div>
+          </div>
+
+          {Array.isArray(payroll.payments) && payroll.payments.length > 0 && (
+            <div className="mt-3 space-y-1">
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Payments received</p>
+              {payroll.payments.map((p) => (
+                <div key={p.id} className={`flex items-center justify-between rounded-md border px-3 py-2 text-sm ${p.is_voided ? 'bg-red-50/50 border-red-100 opacity-75' : 'bg-white border-gray-100'}`}>
+                  <div className="min-w-0">
+                    <p className={`font-medium ${p.is_voided ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+                      {formatDZD(p.amount)}
+                      {Number(p.advance_deducted) > 0 && <span className="text-xs text-gray-500 font-normal"> + {formatDZD(p.advance_deducted)} advance deducted</span>}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {formatTimestamp(p.created_at)}
+                      {p.note && <span> — {p.note}</span>}
+                      {p.is_voided && <span className="mx-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700 uppercase tracking-wider">{t('advances.voided')}</span>}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

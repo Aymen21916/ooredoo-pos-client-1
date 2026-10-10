@@ -1,9 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Fragment } from 'react';
 import api from '../../api/axios';
+import DateRangePicker from '../../components/Daterangepicker';
 import {
   User, RefreshCw, Calendar, AlertCircle, History, Coins, Smartphone,
   Zap, CreditCard, AlertTriangle, Building2, TrendingUp, Award, Wallet, Clock, Info
 } from 'lucide-react';
+import { AlertCircle as RxAlertCircle, ChevronDown as RxChevronDown, ChevronLeft as RxChevronLeft, ChevronRight as RxChevronRight, Filter as RxFilter, RefreshCw as RxRefreshCw, Search as RxSearch, ShieldCheck as RxShieldCheck } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 const formatDZD = (n) =>
   new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 2 })
@@ -66,7 +69,7 @@ export default function CashierHistory() {
   }, []);
 
   const fetchHistory = useCallback(async () => {
-    if (!selectedId) return;
+    if (!selectedId || !from || !to || from > to) return;
     setLoading(true);
     setError('');
     try {
@@ -108,8 +111,8 @@ export default function CashierHistory() {
       {/* ─── Modern Filter Bar ─────────────────────────────────────────── */}
       <section className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-200 p-4 sm:p-5 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50 pointer-events-none"></div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-10">
-          <div>
+        <div className="flex flex-wrap items-end gap-4 relative z-10">
+          <div className="w-full sm:w-64">
             <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 flex items-center gap-1.5">
               <User size={14} /> Cashier
             </label>
@@ -127,32 +130,10 @@ export default function CashierHistory() {
             </select>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 flex items-center gap-1.5">
-              <Calendar size={14} /> range.date_from 
-            </label>
-            <input
-              type="date"
-              value={from}
-              max={to || todayStr()}
-              onChange={(e) => setFrom(e.target.value)}
-              className="block w-full rounded-xl border-0 py-2.5 px-4 text-gray-900 ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 transition-all"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 flex items-center gap-1.5">
-              <Calendar size={14} /> range.date_from 
-            </label>
-            <input
-              type="date"
-              value={to}
-              min={from || undefined}
-              max={todayStr()}
-              onChange={(e) => setTo(e.target.value)}
-              className="block w-full rounded-xl border-0 py-2.5 px-4 text-gray-900 ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 transition-all"
-            />
-          </div>
+          <DateRangePicker
+            range={{ from, to }}
+            onRangeChange={(r) => { setFrom(r.from); setTo(r.to); }}
+          />
         </div>
       </section>
 
@@ -370,6 +351,7 @@ export default function CashierHistory() {
           </section>
         </div>
       )}
+      {/*<RxAuditTrail />*/}
     </div>
   );
 }
@@ -420,6 +402,345 @@ function EmptyState({ message, icon: Icon, title }) {
       </div>
       <h3 className="text-base font-bold text-gray-900 mb-1">{title}</h3>
       <p className="text-sm font-medium text-gray-500 max-w-sm">{message}</p>
+    </div>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Backend-linked sections (added)
+// ═════════════════════════════════════════════════════════════════════════════
+
+const rxUseT = () => {
+  const { t } = useLanguage();
+  return (key, fallback) => {
+    const v = t(key);
+    return v && v !== key ? v : fallback ?? key;
+  };
+};
+
+// ─── Formatters ──────────────────────────────────────────────────────────────
+
+const rxFormatDateTime = (ts) =>
+  ts ? new Date(ts).toLocaleString('en-GB', { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—';
+
+// ─── Layout blocks ───────────────────────────────────────────────────────────
+
+const RxPageHeader = ({ icon: Icon, title, subtitle, right }) => (
+  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="flex items-center gap-3">
+      {Icon && (
+        <div className="h-11 w-11 rounded-xl bg-red-50 text-red-600 flex items-center justify-center ring-1 ring-red-100">
+          <Icon size={22} />
+        </div>
+      )}
+      <div>
+        <h1 className="text-xl font-bold text-gray-900">{title}</h1>
+        {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+      </div>
+    </div>
+    {right}
+  </div>
+);
+
+const RxCard = ({ title, icon: Icon, right, children, className = '' }) => (
+  <section className={`bg-white rounded-2xl shadow-sm ring-1 ring-gray-200 ${className}`}>
+    {(title || right) && (
+      <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-3 border-b border-gray-100">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+          {Icon && <Icon size={15} className="text-red-500" />} {title}
+        </h2>
+        {right}
+      </div>
+    )}
+    <div className="p-5">{children}</div>
+  </section>
+);
+
+const RxErrorBanner = ({ message }) =>
+  message ? (
+    <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 flex items-start gap-2 shadow-sm">
+      <RxAlertCircle size={18} className="mt-0.5 flex-shrink-0 text-red-600" />
+      <span className="font-medium">{message}</span>
+    </div>
+  ) : null;
+
+const RxSpinner = () => (
+  <div className="flex items-center justify-center py-20"><RxRefreshCw className="animate-spin text-red-600" size={32} /></div>
+);
+
+const RxEmpty = ({ children }) => <div className="py-10 text-center text-sm text-gray-400">{children}</div>;
+
+// ─── Form controls ───────────────────────────────────────────────────────────
+
+const rxInputCls =
+  'block w-full rounded-xl border-0 py-2.5 px-4 text-gray-900 ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 transition-all bg-white';
+
+const RxField = ({ label, children }) => (
+  <label className="block">
+    <span className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">{label}</span>
+    {children}
+  </label>
+);
+
+const RxTextInput = (props) => <input {...props} className={`${rxInputCls} ${props.className || ''}`} />;
+
+const RxSelect = ({ children, ...props }) => <select {...props} className={`${rxInputCls} ${props.className || ''}`}>{children}</select>;
+
+const RxPrimaryButton = ({ loading, icon: Icon, children, className = '', ...props }) => (
+  <button
+    {...props}
+    disabled={props.disabled || loading}
+    className={`inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all ${className}`}
+  >
+    {loading ? <RxRefreshCw size={16} className="animate-spin" /> : Icon ? <Icon size={16} /> : null}
+    {children}
+  </button>
+);
+
+const RxSecondaryButton = ({ loading, icon: Icon, children, className = '', ...props }) => (
+  <button
+    {...props}
+    disabled={props.disabled || loading}
+    className={`inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all ${className}`}
+  >
+    {loading ? <RxRefreshCw size={16} className="animate-spin" /> : Icon ? <Icon size={16} /> : null}
+    {children}
+  </button>
+);
+
+/** From / To date pickers + submit button. */
+
+const RxTable = ({ children }) => (
+  <div className="overflow-x-auto rounded-xl ring-1 ring-gray-200">
+    <table className="min-w-full divide-y divide-gray-200 text-sm">{children}</table>
+  </div>
+);
+
+const RxTh = ({ children, align = 'start' }) => (
+  <th className={`px-4 py-2.5 text-${align} text-xs font-bold uppercase tracking-wider text-gray-500 bg-gray-50 whitespace-nowrap`}>{children}</th>
+);
+
+const RxTd = ({ children, align = 'start', className = '' }) => (
+  <td className={`px-4 py-2.5 text-${align} text-gray-700 whitespace-nowrap ${className}`}>{children}</td>
+);
+
+/** Horizontal bar for quick in-table visuals. */
+
+const rxErrMsg = (err, fallback) => err?.response?.data?.message || err?.message || fallback;
+
+const rxUnwrap = (r) => r.data?.data;
+
+const rxReportsApi = {
+  // ── Cashier-or-admin ──────────────────────────────────────────────────────
+  /** GET /api/reports/range?from&to */
+  range: (from, to) => api.get('/reports/range', { params: { from, to } }).then(rxUnwrap),
+
+  // ── Admin only ────────────────────────────────────────────────────────────
+  /** GET /api/reports/preview?date */
+  preview: (date) => api.get('/reports/preview', { params: { date } }).then(rxUnwrap),
+
+  /** POST /api/reports/generate { date, force_close_open_sessions? } */
+  generate: (date, forceCloseOpenSessions = false) =>
+    api
+      .post('/reports/generate', {
+        date,
+        ...(forceCloseOpenSessions ? { force_close_open_sessions: true } : {}),
+      })
+      .then(rxUnwrap),
+
+  /** GET /api/reports?limit */
+  list: (params = { limit: 100 }) => api.get('/reports', { params }).then(rxUnwrap),
+
+  /** GET /api/reports/:id */
+  byId: (id) => api.get(`/reports/${id}`).then(rxUnwrap),
+
+  /** GET /api/reports/:id/export.csv  -> Blob */
+  exportCsv: (id) => api.get(`/reports/${id}/export.csv`, { responseType: 'blob' }).then((r) => r.data),
+
+  /** GET /api/reports/monthly?from&to&store_id */
+  monthly: (params) => api.get('/reports/monthly', { params }).then(rxUnwrap),
+
+  /** GET /api/reports/top?from&to&limit */
+  top: (params) => api.get('/reports/top', { params }).then(rxUnwrap),
+
+  /** GET /api/reports/cashier/:id?from&to */
+  cashierHistory: (id, params) => api.get(`/reports/cashier/${id}`, { params }).then(rxUnwrap),
+
+  /** GET /api/reports/stats?from&to&store_id */
+  statistics: (params) => api.get('/reports/stats', { params }).then(rxUnwrap),
+
+  /** GET /api/reports/cashiers/ranking?by&metric&order&from&to&store_id&limit */
+  cashierRanking: (params) => api.get('/reports/cashiers/ranking', { params }).then(rxUnwrap),
+
+  /** GET /api/reports/audit?user_id&action&table&record_id&from&to&search&limit&offset */
+  audit: (params) => api.get('/reports/audit', { params }).then(rxUnwrap),
+};
+
+/** Triggers a browser download for a Blob. */
+
+const rxCleanParams = (obj) =>
+  Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== '' && v !== null && v !== undefined));
+
+const RX_ACTIONS = ['CREATE', 'UPDATE', 'DELETE', 'VOID'];
+
+const RX_PAGE_SIZE = 50;
+
+const RX_ACTION_STYLE = {
+  CREATE: 'bg-green-50 text-green-700 ring-green-600/20',
+  UPDATE: 'bg-blue-50 text-blue-700 ring-blue-600/20',
+  DELETE: 'bg-red-50 text-red-700 ring-red-600/20',
+  VOID: 'bg-amber-50 text-amber-700 ring-amber-600/20',
+};
+
+const RxJsonBlock = ({ label, value }) =>
+  value ? (
+    <div className="min-w-0 flex-1">
+      <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-gray-400">{label}</div>
+      <pre className="max-h-64 overflow-auto rounded-lg bg-gray-50 p-3 text-xs text-gray-700 ring-1 ring-gray-200">{JSON.stringify(value, null, 2)}</pre>
+    </div>
+  ) : null;
+
+/**
+ * GET /api/reports/audit?user_id&action&table&record_id&from&to&search&limit&offset
+ * Server-side pagination: { items, total, limit, offset }.
+ */
+
+function RxAuditTrail() {
+  const t = rxUseT();
+  const [filters, setFilters] = useState({ user_id: '', action: '', table: '', record_id: '', from: '', to: '', search: '' });
+  const [applied, setApplied] = useState(filters);
+  const [offset, setOffset] = useState(0);
+  const [users, setUsers] = useState([]);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [openId, setOpenId] = useState(null);
+
+  const set = (k) => (e) => setFilters((f) => ({ ...f, [k]: e.target.value }));
+
+  useEffect(() => {
+    api.get('/users').then((r) => {
+      const d = r.data?.data;
+      setUsers(Array.isArray(d) ? d : d?.items || d?.users || []);
+    }).catch(() => setUsers([]));
+  }, []);
+
+  const load = useCallback(async () => {
+    setLoading(true); setError('');
+    try {
+      setData(await rxReportsApi.audit(rxCleanParams({ ...applied, limit: RX_PAGE_SIZE, offset })));
+    } catch (err) {
+      setError(rxErrMsg(err, t('common.action_failed', 'Action failed.')));
+      setData(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [applied, offset, t]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const apply = () => { setOffset(0); setApplied(filters); };
+  const reset = () => {
+    const empty = { user_id: '', action: '', table: '', record_id: '', from: '', to: '', search: '' };
+    setFilters(empty); setApplied(empty); setOffset(0);
+  };
+
+  const total = data?.total ?? 0;
+  const page = Math.floor(offset / RX_PAGE_SIZE) + 1;
+  const pages = Math.max(1, Math.ceil(total / RX_PAGE_SIZE));
+
+  return (
+    <div className="space-y-6">
+      <RxPageHeader icon={RxShieldCheck} title={t('audit.title', 'Audit log')} subtitle={t('audit.subtitle', 'Every create / update / delete made in the system')} />
+
+      <RxCard>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <RxField label={t('audit.search', 'Search')}>
+            <RxTextInput placeholder={t('audit.search_ph', 'Description or username')} value={filters.search} onChange={set('search')}
+              onKeyDown={(e) => e.key === 'Enter' && apply()} />
+          </RxField>
+          <RxField label={t('audit.user', 'User')}>
+            <RxSelect value={filters.user_id} onChange={set('user_id')}>
+              <option value="">{t('audit.all', 'All')}</option>
+              {users.map((u) => <option key={u.id} value={u.id}>{u.full_name || u.username}</option>)}
+            </RxSelect>
+          </RxField>
+          <RxField label={t('audit.action', 'Action')}>
+            <RxSelect value={filters.action} onChange={set('action')}>
+              <option value="">{t('audit.all', 'All')}</option>
+              {RX_ACTIONS.map((a) => <option key={a} value={a}>{a}</option>)}
+            </RxSelect>
+          </RxField>
+          <RxField label={t('audit.table', 'Table')}>
+            <RxTextInput placeholder="register_expenses" value={filters.table} onChange={set('table')} />
+          </RxField>
+          <RxField label={t('audit.record_id', 'Record ID')}>
+            <RxTextInput type="number" min="1" value={filters.record_id} onChange={set('record_id')} />
+          </RxField>
+          <div className="col-span-2">
+            <DateRangePicker
+              allowEmpty
+              range={{ from: filters.from, to: filters.to }}
+              onRangeChange={(r) => setFilters((f) => ({ ...f, ...r }))}
+              labels={{ from: t('range.date_from', 'From'), to: t('range.date_to', 'To') }}
+            />
+          </div>
+          <div className="flex items-end gap-2">
+            <RxPrimaryButton onClick={apply} icon={RxFilter} loading={loading} className="flex-1">{t('audit.apply', 'Apply')}</RxPrimaryButton>
+            <RxSecondaryButton onClick={reset}>{t('audit.reset', 'Reset')}</RxSecondaryButton>
+          </div>
+        </div>
+      </RxCard>
+
+      <RxErrorBanner message={error} />
+      {loading && !data && <RxSpinner />}
+
+      {data && (
+        <RxCard title={`${total} ${t('audit.entries', 'entries')}`} icon={RxSearch}
+          right={
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <RxSecondaryButton className="!px-2.5 !py-1.5" disabled={offset === 0 || loading} onClick={() => setOffset(Math.max(0, offset - RX_PAGE_SIZE))}><RxChevronLeft size={14} /></RxSecondaryButton>
+              <span>{page} / {pages}</span>
+              <RxSecondaryButton className="!px-2.5 !py-1.5" disabled={offset + RX_PAGE_SIZE >= total || loading} onClick={() => setOffset(offset + RX_PAGE_SIZE)}><RxChevronRight size={14} /></RxSecondaryButton>
+            </div>
+          }>
+          {data.items.length === 0 ? <RxEmpty>{t('common.no_data', 'No data.')}</RxEmpty> : (
+            <RxTable>
+              <thead><tr><RxTh>&nbsp;</RxTh><RxTh>{t('audit.when', 'When')}</RxTh><RxTh>{t('audit.user', 'User')}</RxTh><RxTh>{t('audit.action', 'Action')}</RxTh><RxTh>{t('audit.table', 'Table')}</RxTh><RxTh>#</RxTh><RxTh>{t('audit.description', 'Description')}</RxTh><RxTh>IP</RxTh></tr></thead>
+              <tbody className="divide-y divide-gray-100">
+                {data.items.map((row) => {
+                  const open = openId === row.id;
+                  const hasDiff = row.old_values || row.new_values;
+                  return (
+                    <Fragment key={row.id}>
+                      <tr className={hasDiff ? 'cursor-pointer hover:bg-gray-50' : ''} onClick={() => hasDiff && setOpenId(open ? null : row.id)}>
+                        <RxTd>{hasDiff && (open ? <RxChevronDown size={14} /> : <RxChevronRight size={14} />)}</RxTd>
+                        <RxTd>{rxFormatDateTime(row.created_at)}</RxTd>
+                        <RxTd className="font-medium">{row.user_full_name || row.username || '—'}{row.role && <span className="ms-1 text-xs text-gray-400">({row.role})</span>}</RxTd>
+                        <RxTd><span className={`inline-flex rounded-md px-2 py-0.5 text-xs font-bold ring-1 ring-inset ${RX_ACTION_STYLE[row.action] || 'bg-gray-50 text-gray-700 ring-gray-300'}`}>{row.action}</span></RxTd>
+                        <RxTd>{row.table_name}</RxTd>
+                        <RxTd>{row.record_id ?? '—'}</RxTd>
+                        <RxTd className="max-w-md truncate" title={row.description}>{row.description || '—'}</RxTd>
+                        <RxTd className="text-xs text-gray-400">{row.ip_address || '—'}</RxTd>
+                      </tr>
+                      {open && (
+                        <tr>
+                          <td colSpan={8} className="bg-gray-50/60 px-4 py-3">
+                            <div className="flex flex-col md:flex-row gap-4">
+                              <RxJsonBlock label={t('audit.old', 'Old values')} value={row.old_values} />
+                              <RxJsonBlock label={t('audit.new', 'New values')} value={row.new_values} />
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </tbody>
+            </RxTable>
+          )}
+        </RxCard>
+      )}
     </div>
   );
 }

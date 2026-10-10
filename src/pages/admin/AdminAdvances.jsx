@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import api from '../../api/axios';
 import PayrollSection from './PayrollSection';
+import PayrollSettings from './PayrollSettings';
 import {
   Wallet, RefreshCw, X, AlertCircle, CheckCircle2, Search, Store,
   User, ArrowDownCircle, ArrowUpCircle, Banknote, History,
@@ -47,7 +48,9 @@ export default function AdminAdvances() {
   const [selectedId, setSelectedId] = useState(null);
   const [details, setDetails]       = useState(null); // { cashier, outstanding_balance, items, ... }
   const [detailsLoading, setDetailsLoading] = useState(false);
-  const [tab, setTab] = useState('advances');
+  const [tab, setTab] = useState('payroll');
+  // Bumped when advances change so the payroll table ("Advance owed") reloads too.
+  const [payrollKey, setPayrollKey] = useState(0);
 
   // Repayment modal state — shared between the table row action and the
   // drill-down panel "Record repayment" button.
@@ -139,6 +142,7 @@ export default function AdminAdvances() {
       // Refresh the list and, if the drill-down is open for this cashier,
       // refresh the drill-down too so the new repayment row appears.
       fetchList();
+      setPayrollKey((k) => k + 1);
       if (selectedId === repaymentTarget.cashier_id) {
         const drillRes = await api.get(`/advances/cashier/${selectedId}`);
         setDetails(drillRes.data.data);
@@ -180,10 +184,10 @@ export default function AdminAdvances() {
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b border-gray-200 pb-4">
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Wallet className="text-red-600" /> Cashier Advances
+          <Wallet className="text-red-600" /> Payroll & Advances
         </h1>
         <button
-          onClick={fetchList}
+          onClick={() => { fetchList(); setPayrollKey((k) => k + 1); }}
           className="flex items-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
         >
           <RefreshCw size={14} /> Refresh
@@ -204,7 +208,7 @@ export default function AdminAdvances() {
       )}
 
       <div className="flex gap-2 border-b border-gray-200">
-        {[['advances', 'Advances'], ['salaries', 'Salaries & Settings']].map(([key, label]) => (
+        {[['payroll', 'Payroll & Advances'], ['settings', 'Settings']].map(([key, label]) => (
           <button
             key={key}
             onClick={() => setTab(key)}
@@ -217,7 +221,17 @@ export default function AdminAdvances() {
         ))}
       </div>
 
-      {tab === 'advances' && (<>
+      {tab === 'payroll' && (<>
+
+      {/* Payroll (salaries, "Record payment" from the register cash) */}
+      <PayrollSection refreshKey={payrollKey} onChanged={fetchList} />
+
+      {/* Advances */}
+      <div className="border-t border-gray-200 pt-6">
+        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <Wallet size={18} className="text-red-600" /> Cashier advances
+        </h2>
+      </div>
 
       {/* KPI strip */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -330,7 +344,7 @@ export default function AdminAdvances() {
 
       </>)}
 
-      {tab === 'salaries' && <PayrollSection />}
+      {tab === 'settings' && <PayrollSettings />}
 
       {/* Drill-down modal */}
       {selectedId !== null && (
@@ -576,7 +590,7 @@ function RepaymentModal({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              expense.amount_dzd  <span className="text-red-600">*</span>
+              Amount (DZD) <span className="text-red-600">*</span>
             </label>
             <input
               type="number"

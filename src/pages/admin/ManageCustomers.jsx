@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import api from '../../api/axios';
+import DateRangePicker from '../../components/Daterangepicker';
 import { useAdminData } from '../../context/AdminDataContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { UsersRound, Plus, Pencil, Trash2, X, Search, RefreshCw, Phone, MapPin, Briefcase, User,
@@ -61,6 +62,7 @@ export default function ManageCustomers() {
   };
 
   const fetchCustomers = async () => {
+    if (fromDate && toDate && fromDate > toDate) return;
     try {
       setLoading(true); setError('');
       const params = { limit: 200 };
@@ -226,14 +228,14 @@ export default function ManageCustomers() {
               <option value="accessory">Accessories</option>
             </select>
           </div>
-          <div className="w-full sm:w-1/6">
-            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">{t('reports.from')}</label>
-            <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none" />
-          </div>
-          <div className="w-full sm:w-1/6">
-            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">{t('reports.to')}</label>
-            <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none" />
-          </div>
+        </div>
+        <div className="pt-3 border-t border-gray-100">
+          <DateRangePicker
+            allowEmpty
+            range={{ from: fromDate, to: toDate }}
+            onRangeChange={(r) => { setFromDate(r.from); setToDate(r.to); }}
+            labels={{ from: t('reports.from'), to: t('reports.to') }}
+          />
         </div>
         <div className="flex flex-col sm:flex-row items-end gap-3 pt-3 border-t border-gray-100">
           <div className="w-full sm:w-1/3"><label className="block text-xs font-bold text-purple-700 uppercase tracking-wider mb-1">{t('manage.filter_level')}</label><select value={tierFilter} onChange={(e) => setTierFilter(e.target.value)} className="w-full rounded-md border border-purple-200 px-3 py-2 text-sm focus:border-purple-500 bg-purple-50 font-bold text-purple-900 outline-none"><option value="all">-- {t('common.all')} --</option><option value="VVIP">VVIP</option><option value="VIP">VIP</option><option value="Gold">Gold</option><option value="Silver">Silver</option><option value="Bronze">Bronze</option><option value="Regular">Regular</option></select></div>

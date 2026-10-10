@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../../api/axios';
+import DateRangePicker from '../../components/DateRangePicker';
 import {
   Landmark, Plus, RefreshCw, AlertCircle, CheckCircle2, X, Ban, FilterX,
   ChevronLeft, ChevronRight, ArrowDownToLine, ArrowUpFromLine, Wallet,
@@ -361,6 +362,9 @@ export default function RegisterLedger() {
     try {
       const params = { limit: PAGE_SIZE, offset: page * PAGE_SIZE };
       Object.entries(filters).forEach(([k, v]) => { if (v && v !== 'all') params[k] = v; });
+      // Date-only picker → cover the whole day on both ends.
+      if (params.from) params.from = `${params.from}T00:00:00`;
+      if (params.to) params.to = `${params.to}T23:59:59`;
       const r = await api.get('/register-ledger', { params });
       setData(r.data.data);
     } catch (err) {
@@ -435,7 +439,7 @@ export default function RegisterLedger() {
 
       {/* Filters */}
       <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-500">Store</label>
             <select value={filters.store_id} onChange={(e) => setFilter('store_id', e.target.value)} className={selectCls}>
@@ -449,14 +453,6 @@ export default function RegisterLedger() {
               <option value="">All users</option>
               {options.users.map((u) => <option key={u.id} value={u.id}>{u.full_name} ({u.role})</option>)}
             </select>
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-500">From</label>
-            <input type="datetime-local" value={filters.from} onChange={(e) => setFilter('from', e.target.value)} className={selectCls} />
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-500">To</label>
-            <input type="datetime-local" value={filters.to} onChange={(e) => setFilter('to', e.target.value)} className={selectCls} />
           </div>
           <div>
             <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-500">Void Status</label>
@@ -476,7 +472,13 @@ export default function RegisterLedger() {
           </div>
         </div>
 
-        {invalidRange && <p className="mt-3 text-sm font-medium text-amber-700">“From” must be on or before “To”.</p>}
+        <div className="mt-4">
+          <DateRangePicker
+            allowEmpty
+            range={{ from: filters.from, to: filters.to }}
+            onRangeChange={(r) => { setFilters((f) => ({ ...f, ...r })); setPage(0); }}
+          />
+        </div>
         {hasFilters && (
           <button onClick={clearFilters} className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-gray-600 hover:text-red-600">
             <FilterX size={16} /> Clear filters
